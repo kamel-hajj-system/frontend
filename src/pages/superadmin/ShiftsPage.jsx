@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Table, Button, Card, Modal, Form, Input, Switch, message } from 'antd';
-import { PlusOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { getShifts, createShift, updateShift } from '../../api/shifts';
+import { getShifts, createShift, updateShift, deleteShift } from '../../api/shifts';
 
 function formatTime(dateStr) {
   if (!dateStr) return '—';
@@ -88,6 +88,25 @@ export function ShiftsPage() {
     }
   };
 
+  const handleDelete = (record) => {
+    Modal.confirm({
+      title: t('superadmin.delete'),
+      content: t('superadmin.shifts') + ': ' + record.name,
+      okText: t('superadmin.yes'),
+      okType: 'danger',
+      cancelText: t('superadmin.no'),
+      onOk: async () => {
+        try {
+          await deleteShift(record.id);
+          message.success(t('superadmin.deleteSuccess'));
+          fetchShifts();
+        } catch (e) {
+          message.error(e?.message || t('common.error'));
+        }
+      },
+    });
+  };
+
   const columns = [
     { title: t('superadmin.nameEn'), dataIndex: 'name', key: 'name' },
     { title: t('superadmin.nameAr'), dataIndex: 'shiftAr', key: 'shiftAr' },
@@ -119,6 +138,9 @@ export function ShiftsPage() {
           </Button>
           <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEdit(record)}>
             {t('superadmin.edit')}
+          </Button>
+          <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)}>
+            {t('superadmin.delete')}
           </Button>
         </>
       ),
@@ -154,8 +176,11 @@ export function ShiftsPage() {
         cancelText={t('common.cancel')}
       >
         <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-          <Form.Item name="name" label={t('superadmin.name')} rules={[{ required: true }]}>
+          <Form.Item name="name" label={t('superadmin.nameEn')} rules={[{ required: true }]}>
             <Input placeholder="Shift 1" />
+          </Form.Item>
+          <Form.Item name="shiftAr" label={t('superadmin.nameAr')} rules={[{ required: true }]}>
+            <Input placeholder="الشفت 1" />
           </Form.Item>
           <Form.Item name="startTime" label={t('superadmin.startTime')} rules={[{ required: true }]}>
             <Input placeholder="06:00" />
@@ -176,7 +201,8 @@ export function ShiftsPage() {
       >
         {viewShift && (
           <dl style={{ margin: 0 }}>
-            <dt><strong>{t('superadmin.name')}</strong></dt><dd>{viewShift.name}</dd>
+            <dt><strong>{t('superadmin.nameEn')}</strong></dt><dd>{viewShift.name}</dd>
+            <dt><strong>{t('superadmin.nameAr')}</strong></dt><dd>{viewShift.shiftAr || '—'}</dd>
             <dt><strong>{t('superadmin.startTime')}</strong></dt><dd>{formatTime(viewShift.startTime)}</dd>
             <dt><strong>{t('superadmin.endTime')}</strong></dt><dd>{formatTime(viewShift.endTime)}</dd>
             <dt><strong>{t('superadmin.isForEmployee')}</strong></dt><dd>{viewShift.isForEmployee ? t('superadmin.yes') : t('superadmin.no')}</dd>

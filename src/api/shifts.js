@@ -26,3 +26,8 @@ export async function updateShift(id, payload) {
     body: JSON.stringify(payload),
   });
 }
+
+/** Delete shift (Super Admin). */
+export async function deleteShift(id) {
+  return apiRequest(`/shifts/${id}`, { method: 'DELETE' });
+}

@@ -334,19 +334,6 @@ export function SuperAdminDashboardPage() {
         }
         style={{ marginBottom: 16 }}
       >
-        <div
-          style={{
-            marginBottom: 12,
-            padding: '10px 12px',
-            borderRadius: 8,
-            background: '#fff7e6',
-            border: '1px solid #ffd591',
-            color: '#ad6800',
-            fontWeight: 600,
-          }}
-        >
-          Welcome! Deployment test marker: 2026-03-16
-        </div>
         <p style={{ marginBottom: 16 }}>{t('superadmin.users')} — {t('superadmin.total')}: {users.total}</p>
         <Table
           rowKey="id"
