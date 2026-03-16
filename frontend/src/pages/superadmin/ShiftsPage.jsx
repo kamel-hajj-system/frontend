@@ -154,8 +154,11 @@ export function ShiftsPage() {
         cancelText={t('common.cancel')}
       >
         <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-          <Form.Item name="name" label={t('superadmin.name')} rules={[{ required: true }]}>
+          <Form.Item name="name" label={t('superadmin.nameEn')} rules={[{ required: true }]}>
             <Input placeholder="Shift 1" />
+          </Form.Item>
+          <Form.Item name="shiftAr" label={t('superadmin.nameAr')} rules={[{ required: true }]}>
+            <Input placeholder="الشفت 1" />
           </Form.Item>
           <Form.Item name="startTime" label={t('superadmin.startTime')} rules={[{ required: true }]}>
             <Input placeholder="06:00" />
@@ -176,7 +179,8 @@ export function ShiftsPage() {
       >
         {viewShift && (
           <dl style={{ margin: 0 }}>
-            <dt><strong>{t('superadmin.name')}</strong></dt><dd>{viewShift.name}</dd>
+            <dt><strong>{t('superadmin.nameEn')}</strong></dt><dd>{viewShift.name}</dd>
+            <dt><strong>{t('superadmin.nameAr')}</strong></dt><dd>{viewShift.shiftAr || '—'}</dd>
             <dt><strong>{t('superadmin.startTime')}</strong></dt><dd>{formatTime(viewShift.startTime)}</dd>
             <dt><strong>{t('superadmin.endTime')}</strong></dt><dd>{formatTime(viewShift.endTime)}</dd>
             <dt><strong>{t('superadmin.isForEmployee')}</strong></dt><dd>{viewShift.isForEmployee ? t('superadmin.yes') : t('superadmin.no')}</dd>
