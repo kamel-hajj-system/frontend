@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Table, Button, Card, Modal, Form, Input, Switch, message } from 'antd';
-import { PlusOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { getShifts, createShift, updateShift } from '../../api/shifts';
+import { getShifts, createShift, updateShift, deleteShift } from '../../api/shifts';
 
 function formatTime(dateStr) {
   if (!dateStr) return '—';
@@ -88,6 +88,25 @@ export function ShiftsPage() {
     }
   };
 
+  const handleDelete = (record) => {
+    Modal.confirm({
+      title: t('superadmin.delete'),
+      content: t('superadmin.shifts') + ': ' + record.name,
+      okText: t('superadmin.yes'),
+      okType: 'danger',
+      cancelText: t('superadmin.no'),
+      onOk: async () => {
+        try {
+          await deleteShift(record.id);
+          message.success(t('superadmin.deleteSuccess'));
+          fetchShifts();
+        } catch (e) {
+          message.error(e?.message || t('common.error'));
+        }
+      },
+    });
+  };
+
   const columns = [
     { title: t('superadmin.nameEn'), dataIndex: 'name', key: 'name' },
     { title: t('superadmin.nameAr'), dataIndex: 'shiftAr', key: 'shiftAr' },
@@ -119,6 +138,9 @@ export function ShiftsPage() {
           </Button>
           <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEdit(record)}>
             {t('superadmin.edit')}
+          </Button>
+          <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)}>
+            {t('superadmin.delete')}
           </Button>
         </>
       ),
