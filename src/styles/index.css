@@ -1,0 +1,25 @@
+@import './variables.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  body {
+    @apply bg-[var(--color-surface)] text-[var(--color-text)];
+    font-family: var(--font-sans);
+  }
+  [dir='rtl'] body {
+    font-family: var(--font-arabic);
+  }
+}
+
+/* Focus ring for accessibility */
+@layer utilities {
+  .focus-ring {
+    @apply outline-none ring-2 ring-[var(--color-primary)] ring-offset-2 ring-offset-[var(--color-surface)];
+  }
+}
