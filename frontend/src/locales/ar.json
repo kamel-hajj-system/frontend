@@ -132,6 +132,8 @@
     "userPagesList": "الصفحات التي يمكن لهذا المستخدم الوصول إليها",
     "locationName": "الموقع",
     "shiftName": "الوردية",
+    "nameEn": "الاسم (إنجليزي)",
+    "nameAr": "الاسم (عربي)",
     "startTime": "وقت البداية",
     "endTime": "وقت النهاية",
     "isForEmployee": "للموظفين",

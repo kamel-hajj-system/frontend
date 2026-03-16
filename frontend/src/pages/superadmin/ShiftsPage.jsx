@@ -38,7 +38,13 @@ export function ShiftsPage() {
 
   const openCreate = () => {
     setEditingId(null);
-    form.setFieldsValue({ name: '', startTime: '06:00', endTime: '14:00', isForEmployee: true });
+    form.setFieldsValue({
+      name: '',
+      shiftAr: '',
+      startTime: '06:00',
+      endTime: '14:00',
+      isForEmployee: true,
+    });
     setModalOpen(true);
   };
 
@@ -46,6 +52,7 @@ export function ShiftsPage() {
     setEditingId(record.id);
     form.setFieldsValue({
       name: record.name,
+      shiftAr: record.shiftAr || '',
       startTime: formatTime(record.startTime),
       endTime: formatTime(record.endTime),
       isForEmployee: record.isForEmployee ?? true,
@@ -59,6 +66,7 @@ export function ShiftsPage() {
       setActionLoading(true);
       const payload = {
         name: values.name.trim(),
+        shiftAr: values.shiftAr ? values.shiftAr.trim() : null,
         startTime: values.startTime || '00:00',
         endTime: values.endTime || '00:00',
         isForEmployee: values.isForEmployee !== false,
@@ -81,7 +89,8 @@ export function ShiftsPage() {
   };
 
   const columns = [
-    { title: t('superadmin.shiftName'), dataIndex: 'name', key: 'name' },
+    { title: t('superadmin.nameEn'), dataIndex: 'name', key: 'name' },
+    { title: t('superadmin.nameAr'), dataIndex: 'shiftAr', key: 'shiftAr' },
     {
       title: t('superadmin.startTime'),
       dataIndex: 'startTime',
