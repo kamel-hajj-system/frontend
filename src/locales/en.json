@@ -132,6 +132,8 @@
     "userPagesList": "Pages this user can access",
     "locationName": "Location",
     "shiftName": "Shift",
+    "nameEn": "Name (EN)",
+    "nameAr": "Name (AR)",
     "startTime": "Start time",
     "endTime": "End time",
     "isForEmployee": "For employees",

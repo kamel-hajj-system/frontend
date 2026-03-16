@@ -27,13 +27,17 @@ export function LocationsPage() {
 
   const openCreate = () => {
     setEditingId(null);
-    form.setFieldsValue({ name: '', isActive: true });
+    form.setFieldsValue({ name: '', locationAr: '', isActive: true });
     setModalOpen(true);
   };
 
   const openEdit = (record) => {
     setEditingId(record.id);
-    form.setFieldsValue({ name: record.name, isActive: record.isActive ?? true });
+    form.setFieldsValue({
+      name: record.name,
+      locationAr: record.locationAr || '',
+      isActive: record.isActive ?? true,
+    });
     setModalOpen(true);
   };
 
@@ -41,11 +45,16 @@ export function LocationsPage() {
     try {
       const values = await form.validateFields();
       setActionLoading(true);
+      const payload = {
+        name: values.name.trim(),
+        locationAr: values.locationAr ? values.locationAr.trim() : null,
+        isActive: values.isActive !== false,
+      };
       if (editingId) {
-        await updateLocation(editingId, { name: values.name.trim(), isActive: values.isActive });
+        await updateLocation(editingId, payload);
         message.success(t('superadmin.updateSuccess'));
       } else {
-        await createLocation({ name: values.name.trim(), isActive: values.isActive !== false });
+        await createLocation(payload);
         message.success(t('superadmin.createSuccess'));
       }
       setModalOpen(false);
@@ -59,7 +68,8 @@ export function LocationsPage() {
   };
 
   const columns = [
-    { title: t('superadmin.name'), dataIndex: 'name', key: 'name' },
+    { title: t('superadmin.nameEn'), dataIndex: 'name', key: 'name' },
+    { title: t('superadmin.nameAr'), dataIndex: 'locationAr', key: 'locationAr' },
     {
       title: t('superadmin.isActive'),
       dataIndex: 'isActive',
@@ -106,7 +116,10 @@ export function LocationsPage() {
         cancelText={t('common.cancel')}
       >
         <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-          <Form.Item name="name" label={t('superadmin.name')} rules={[{ required: true }]}>
+          <Form.Item name="name" label={t('superadmin.nameEn')} rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="locationAr" label={t('superadmin.nameAr')}>
             <Input />
           </Form.Item>
           <Form.Item name="isActive" label={t('superadmin.isActive')} valuePropName="checked">
