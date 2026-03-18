@@ -7,26 +7,23 @@ import { AUTH_TOKEN_KEY } from '../utils/constants';
 
 const AuthContext = createContext(null);
 
-function getPermissionNames(user) {
-  if (!user) return [];
-  if (Array.isArray(user.permissionNames)) return user.permissionNames;
-  if (!user.userPermissions) return [];
-  return user.userPermissions.map((up) => up.permission?.name).filter(Boolean);
-}
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const permissionNames = useMemo(() => getPermissionNames(user), [user]);
+  const accessCodes = useMemo(() => {
+    if (!user) return [];
+    if (Array.isArray(user.accessCodes)) return user.accessCodes;
+    return [];
+  }, [user]);
 
-  const hasPermission = useCallback(
-    (permission) => {
-      if (!permission) return false;
+  const hasAccess = useCallback(
+    (code) => {
+      if (!code) return false;
       if (user?.isSuperAdmin) return true;
-      return permissionNames.includes(permission);
+      return accessCodes.includes(code);
     },
-    [user?.isSuperAdmin, permissionNames]
+    [user?.isSuperAdmin, accessCodes]
   );
 
   const loadUser = useCallback(async () => {
@@ -54,46 +51,38 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  useEffect(() => {
-    loadUser();
-  }, [loadUser]);
+  useEffect(() => { loadUser(); }, [loadUser]);
 
-  const login = useCallback(
-    async (email, password) => {
+  const login = useCallback(async (email, password) => {
+    try {
       const data = await apiLogin(email, password);
-      // Refresh user from /users/me so we have full permissionNames (direct + from groups)
-      try {
-        const u = await getMe();
-        setUser(u);
-      } catch {
-        setUser(data.user ?? null);
-      }
+      const u = await getMe();
+      setUser(u);
       return data;
-    },
-    []
-  );
+    } catch {
+      // Do not trust login response for auth state. If /users/me fails, treat login as failed.
+      setAuthToken(null);
+      setUser(null);
+      throw new Error('Login failed. Please try again.');
+    }
+  }, []);
 
   const logout = useCallback(async () => {
     await apiLogout();
     setUser(null);
   }, []);
 
-  const setUserFromLogin = useCallback((userData) => {
-    setUser(userData);
-  }, []);
-
-  const value = {
+  const value = useMemo(() => ({
     user,
     loading,
     isAuthenticated: Boolean(user),
     isSuperAdmin: Boolean(user?.isSuperAdmin),
-    permissionNames,
-    hasPermission,
+    accessCodes,
+    hasAccess,
     login,
     logout,
-    setUserFromLogin,
     refreshUser: loadUser,
-  };
+  }), [user, loading, login, logout, loadUser, accessCodes, hasAccess]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,17 +1,28 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Table, Button, Card, Modal, Form, Input, Switch, message } from 'antd';
+import { Button, Card, Modal, Form, Input, Switch, message, TimePicker } from 'antd';
 import { PlusOutlined, EditOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getShifts, createShift, updateShift, deleteShift } from '../../api/shifts';
+import { ResponsiveTable } from '../../components/common/ResponsiveTable';
+import dayjs from 'dayjs';
 
 function formatTime(dateStr) {
   if (!dateStr) return '—';
   try {
     const d = new Date(dateStr);
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    const hh = String(d.getUTCHours()).padStart(2, '0');
+    const mm = String(d.getUTCMinutes()).padStart(2, '0');
+    return `${hh}:${mm}`;
   } catch {
     return dateStr;
   }
+}
+
+function toDayjsTime(hhmm) {
+  if (!hhmm || typeof hhmm !== 'string') return null;
+  const [h, m] = hhmm.split(':').map((x) => Number(x));
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
+  return dayjs().hour(h).minute(m).second(0);
 }
 
 export function ShiftsPage() {
@@ -41,8 +52,8 @@ export function ShiftsPage() {
     form.setFieldsValue({
       name: '',
       shiftAr: '',
-      startTime: '06:00',
-      endTime: '14:00',
+      startTime: toDayjsTime('06:00'),
+      endTime: toDayjsTime('14:00'),
       isForEmployee: true,
     });
     setModalOpen(true);
@@ -50,11 +61,13 @@ export function ShiftsPage() {
 
   const openEdit = (record) => {
     setEditingId(record.id);
+    const start = toDayjsTime(formatTime(record.startTime));
+    const end = toDayjsTime(formatTime(record.endTime));
     form.setFieldsValue({
       name: record.name,
       shiftAr: record.shiftAr || '',
-      startTime: formatTime(record.startTime),
-      endTime: formatTime(record.endTime),
+      startTime: start,
+      endTime: end,
       isForEmployee: record.isForEmployee ?? true,
     });
     setModalOpen(true);
@@ -67,8 +80,8 @@ export function ShiftsPage() {
       const payload = {
         name: values.name.trim(),
         shiftAr: values.shiftAr ? values.shiftAr.trim() : null,
-        startTime: values.startTime || '00:00',
-        endTime: values.endTime || '00:00',
+        startTime: values.startTime?.format ? values.startTime.format('HH:mm') : '00:00',
+        endTime: values.endTime?.format ? values.endTime.format('HH:mm') : '00:00',
         isForEmployee: values.isForEmployee !== false,
       };
       if (editingId) {
@@ -157,7 +170,7 @@ export function ShiftsPage() {
           </Button>
         }
       >
-        <Table
+        <ResponsiveTable
           rowKey="id"
           columns={columns}
           dataSource={list}
@@ -183,10 +196,22 @@ export function ShiftsPage() {
             <Input placeholder="الشفت 1" />
           </Form.Item>
           <Form.Item name="startTime" label={t('superadmin.startTime')} rules={[{ required: true }]}>
-            <Input placeholder="06:00" />
+            <TimePicker
+              style={{ width: '100%' }}
+              format="HH:mm"
+              minuteStep={5}
+              inputReadOnly
+              placeholder="06:00"
+            />
           </Form.Item>
           <Form.Item name="endTime" label={t('superadmin.endTime')} rules={[{ required: true }]}>
-            <Input placeholder="14:00" />
+            <TimePicker
+              style={{ width: '100%' }}
+              format="HH:mm"
+              minuteStep={5}
+              inputReadOnly
+              placeholder="14:00"
+            />
           </Form.Item>
           <Form.Item name="isForEmployee" label={t('superadmin.isForEmployee')} valuePropName="checked">
             <Switch />

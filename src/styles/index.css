@@ -23,3 +23,15 @@
     @apply outline-none ring-2 ring-[var(--color-primary)] ring-offset-2 ring-offset-[var(--color-surface)];
   }
 }
+
+/* Shared responsive helpers */
+.kamel-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kamel-table-wrap .ant-table {
+  min-width: 100%;
+}

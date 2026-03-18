@@ -20,3 +20,9 @@ export async function logout() {
     setAuthToken(null);
   }
 }
+
+export async function refresh() {
+  const data = await apiRequest('/users/refresh', { method: 'POST' });
+  if (data.token) setAuthToken(data.token);
+  return data;
+}

@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Table, Button, Card, Modal, Form, Input, Switch, Space, message } from 'antd';
+import { Button, Card, Modal, Form, Input, Switch, Space, message, InputNumber } from 'antd';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getLocations, createLocation, updateLocation } from '../../api/locations';
+import { ResponsiveTable } from '../../components/common/ResponsiveTable';
 
 export function LocationsPage() {
   const { t } = useLanguage();
@@ -27,7 +28,7 @@ export function LocationsPage() {
 
   const openCreate = () => {
     setEditingId(null);
-    form.setFieldsValue({ name: '', locationAr: '', isActive: true });
+    form.setFieldsValue({ name: '', locationAr: '', zoneCenterLat: null, zoneCenterLng: null, zoneRadiusMeters: null, isActive: true });
     setModalOpen(true);
   };
 
@@ -36,6 +37,9 @@ export function LocationsPage() {
     form.setFieldsValue({
       name: record.name,
       locationAr: record.locationAr || '',
+      zoneCenterLat: record.zoneCenterLat ?? null,
+      zoneCenterLng: record.zoneCenterLng ?? null,
+      zoneRadiusMeters: record.zoneRadiusMeters ?? null,
       isActive: record.isActive ?? true,
     });
     setModalOpen(true);
@@ -48,6 +52,9 @@ export function LocationsPage() {
       const payload = {
         name: values.name.trim(),
         locationAr: values.locationAr ? values.locationAr.trim() : null,
+        zoneCenterLat: values.zoneCenterLat ?? null,
+        zoneCenterLng: values.zoneCenterLng ?? null,
+        zoneRadiusMeters: values.zoneRadiusMeters ?? null,
         isActive: values.isActive !== false,
       };
       if (editingId) {
@@ -70,6 +77,14 @@ export function LocationsPage() {
   const columns = [
     { title: t('superadmin.nameEn'), dataIndex: 'name', key: 'name' },
     { title: t('superadmin.nameAr'), dataIndex: 'locationAr', key: 'locationAr' },
+    {
+      title: t('superadmin.locationZone') || 'Zone',
+      key: 'zone',
+      render: (_, r) => {
+        if (r.zoneCenterLat == null || r.zoneCenterLng == null || r.zoneRadiusMeters == null) return '—';
+        return `${r.zoneCenterLat.toFixed(5)}, ${r.zoneCenterLng.toFixed(5)} (${r.zoneRadiusMeters}m)`;
+      },
+    },
     {
       title: t('superadmin.isActive'),
       dataIndex: 'isActive',
@@ -97,7 +112,7 @@ export function LocationsPage() {
           </Button>
         }
       >
-        <Table
+        <ResponsiveTable
           rowKey="id"
           columns={columns}
           dataSource={list}
@@ -122,6 +137,19 @@ export function LocationsPage() {
           <Form.Item name="locationAr" label={t('superadmin.nameAr')}>
             <Input />
           </Form.Item>
+          <Card size="small" style={{ marginBottom: 12 }} title={t('superadmin.locationZone') || 'Location zone'}>
+            <Space wrap style={{ width: '100%' }}>
+              <Form.Item name="zoneCenterLat" label={t('superadmin.zoneCenterLat') || 'Center lat'} style={{ marginBottom: 0 }}>
+                <InputNumber style={{ width: 180 }} min={-90} max={90} step={0.00001} />
+              </Form.Item>
+              <Form.Item name="zoneCenterLng" label={t('superadmin.zoneCenterLng') || 'Center lng'} style={{ marginBottom: 0 }}>
+                <InputNumber style={{ width: 180 }} min={-180} max={180} step={0.00001} />
+              </Form.Item>
+              <Form.Item name="zoneRadiusMeters" label={t('superadmin.zoneRadiusMeters') || 'Radius (m)'} style={{ marginBottom: 0 }}>
+                <InputNumber style={{ width: 180 }} min={1} max={20000} step={10} />
+              </Form.Item>
+            </Space>
+          </Card>
           <Form.Item name="isActive" label={t('superadmin.isActive')} valuePropName="checked">
             <Switch />
           </Form.Item>

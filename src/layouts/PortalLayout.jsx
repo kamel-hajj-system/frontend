@@ -3,25 +3,27 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Layout, Menu, Button, Dropdown, Drawer, Typography, Grid } from 'antd';
 import {
   DashboardOutlined,
-  SafetyOutlined,
+  InboxOutlined,
   LogoutOutlined,
   GlobalOutlined,
+  CalendarOutlined,
   SunOutlined,
   MoonOutlined,
   MenuOutlined,
   UserOutlined,
+  TeamOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { ROUTES, PERMISSIONS, USER_TYPES } from '../utils/constants';
+import { ROUTES, USER_TYPES } from '../utils/constants';
 
 const { Header, Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
 
 export function PortalLayout() {
-  const { user, logout, hasPermission } = useAuth();
+  const { user, logout, hasAccess } = useAuth();
   const { t, lang, setLang, LANGUAGES } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -54,19 +56,108 @@ export function PortalLayout() {
     { key: 'logout', icon: <LogoutOutlined />, label: t('nav.logout'), danger: true, onClick: handleLogout },
   ];
 
-  const dashboardRoute = user?.userType === USER_TYPES.SERVICE_CENTER
-    ? ROUTES.PORTAL_SERVICE_CENTER_DASHBOARD
-    : ROUTES.PORTAL_COMPANY_DASHBOARD;
-  const dashboardLabel = user?.userType === USER_TYPES.SERVICE_CENTER
-    ? t('portal.serviceCenterDashboardTitle')
-    : t('portal.companyDashboardTitle');
-  const portalItems = [
-    { key: dashboardRoute, icon: <DashboardOutlined />, label: dashboardLabel, onClick: () => { navigate(dashboardRoute); setDrawerOpen(false); } },
-    ...(hasPermission(PERMISSIONS.TEST_PERMISSION_ROLE)
-      ? [{ key: ROUTES.PORTAL_TEST_PERMISSION_ROLE, icon: <SafetyOutlined />, label: t('portal.test.title'), onClick: () => { navigate(ROUTES.PORTAL_TEST_PERMISSION_ROLE); setDrawerOpen(false); } }]
+  const dashboardRoute =
+    user?.userType === USER_TYPES.SERVICE_CENTER
+      ? ROUTES.PORTAL_SERVICE_CENTER_DASHBOARD
+      : ROUTES.PORTAL_COMPANY_DASHBOARD;
+  const dashboardLabel =
+    user?.userType === USER_TYPES.SERVICE_CENTER
+      ? t('portal.serviceCenterDashboardTitle')
+      : t('portal.companyDashboardTitle');
+
+  const sidebarMenuItems = [
+    {
+      key: dashboardRoute,
+      icon: <DashboardOutlined />,
+      label: dashboardLabel,
+      onClick: () => {
+        navigate(dashboardRoute);
+        setDrawerOpen(false);
+      },
+    },
+    ...(user?.userType === USER_TYPES.COMPANY && user?.role === 'Supervisor'
+      ? [
+          {
+            key: ROUTES.PORTAL_COMPANY_EMPLOYEES,
+            icon: <TeamOutlined />,
+            label: t('portal.employeesTitle'),
+            onClick: () => {
+              navigate(ROUTES.PORTAL_COMPANY_EMPLOYEES);
+              setDrawerOpen(false);
+            },
+          },
+        ]
+      : []),
+    ...(user?.userType === USER_TYPES.COMPANY
+      ? [
+          {
+            key: ROUTES.PORTAL_COMPANY_ATTENDANCE_DEPARTURE,
+            icon: <CalendarOutlined />,
+            label: t('portal.attendanceDepartureTitle'),
+            onClick: () => {
+              navigate(ROUTES.PORTAL_COMPANY_ATTENDANCE_DEPARTURE);
+              setDrawerOpen(false);
+            },
+          },
+        ]
+      : []),
+    ...(user?.isHr
+      ? [
+          {
+            key: 'hr-root',
+            icon: <TeamOutlined />,
+            label: t('portal.hrDashboardTitle'),
+            children: [
+              {
+                key: ROUTES.PORTAL_HR_DASHBOARD,
+                label: t('portal.hrDashboardTitle'),
+                onClick: () => {
+                  navigate(ROUTES.PORTAL_HR_DASHBOARD);
+                  setDrawerOpen(false);
+                },
+              },
+              {
+                key: ROUTES.PORTAL_HR_USERS,
+                label: t('portal.hrUsersTitle'),
+                onClick: () => {
+                  navigate(ROUTES.PORTAL_HR_USERS);
+                  setDrawerOpen(false);
+                },
+              },
+              {
+                key: ROUTES.PORTAL_HR_SUPERVISORS,
+                label: t('portal.hrSupervisorsTitle'),
+                onClick: () => {
+                  navigate(ROUTES.PORTAL_HR_SUPERVISORS);
+                  setDrawerOpen(false);
+                },
+              },
+              {
+                key: ROUTES.PORTAL_HR_ATTENDANCE,
+                label: t('portal.hrAttendanceTitle'),
+                onClick: () => {
+                  navigate(ROUTES.PORTAL_HR_ATTENDANCE);
+                  setDrawerOpen(false);
+                },
+              },
+            ],
+          },
+        ]
+      : []),
+    ...(hasAccess?.('reception.dashboard')
+      ? [
+          {
+            key: ROUTES.PORTAL_RECEPTION_DASHBOARD,
+            icon: <InboxOutlined />,
+            label: t('portal.receptionDashboardTitle'),
+            onClick: () => {
+              navigate(ROUTES.PORTAL_RECEPTION_DASHBOARD);
+              setDrawerOpen(false);
+            },
+          },
+        ]
       : []),
   ];
-  const sidebarMenuItems = portalItems;
 
   const isDarkSider = theme === 'dark';
   const siderBg = isDarkSider ? '#001529' : 'var(--color-bg-container)';
@@ -76,7 +167,11 @@ export function PortalLayout() {
   const sidebar = (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: siderBg }}>
       <div style={{ height: 32, margin: 16, display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-        <Button type="link" onClick={() => navigate(dashboardRoute)} style={{ fontWeight: 600, color: isDarkSider ? 'rgba(255,255,255,0.85)' : 'var(--color-text)', padding: 0 }}>
+        <Button
+          type="link"
+          onClick={() => navigate(dashboardRoute)}
+          style={{ fontWeight: 600, color: isDarkSider ? 'rgba(255,255,255,0.85)' : 'var(--color-text)', padding: 0 }}
+        >
           {t('app.shortName')}
         </Button>
       </div>
@@ -88,7 +183,12 @@ export function PortalLayout() {
         style={{ borderRight: 0, flex: 1, background: 'transparent' }}
       />
       <div style={{ padding: 12, borderTop: `1px solid ${siderBorder}`, flexShrink: 0 }}>
-        <Text type="secondary" style={{ color: siderTextColor, display: 'block', fontSize: 12 }} ellipsis title={displayName}>
+        <Text
+          type="secondary"
+          style={{ color: siderTextColor, display: 'block', fontSize: 12 }}
+          ellipsis
+          title={displayName}
+        >
           {displayName}
         </Text>
       </div>
@@ -100,7 +200,12 @@ export function PortalLayout() {
       <Dropdown menu={{ items: langMenuItems }} placement="bottomEnd">
         <Button type="text" icon={<GlobalOutlined />} aria-label={t('nav.login')} />
       </Dropdown>
-      <Button type="text" icon={theme === 'dark' ? <SunOutlined /> : <MoonOutlined />} onClick={toggleTheme} aria-label={theme === 'dark' ? t('theme.light') : t('theme.dark')} />
+      <Button
+        type="text"
+        icon={theme === 'dark' ? <SunOutlined /> : <MoonOutlined />}
+        onClick={toggleTheme}
+        aria-label={theme === 'dark' ? t('theme.light') : t('theme.dark')}
+      />
       <Dropdown menu={{ items: userMenuItems }} placement="bottomEnd">
         <Button icon={<UserOutlined />}>{t('nav.logout')}</Button>
       </Dropdown>
@@ -148,7 +253,9 @@ export function PortalLayout() {
             onClick={() => setDrawerOpen(false)}
           />
           <div style={{ padding: 16, borderTop: `1px solid ${siderBorder}` }}>
-            <Text type="secondary" style={{ display: 'block', color: siderTextColor }} ellipsis>{displayName}</Text>
+            <Text type="secondary" style={{ display: 'block', color: siderTextColor }} ellipsis>
+              {displayName}
+            </Text>
           </div>
         </Drawer>
       )}
@@ -160,8 +267,16 @@ export function PortalLayout() {
       >
         <Header style={{ padding: '0 24px', display: 'flex', alignItems: 'center', gap: 16 }}>
           {!isDesktop && <Button type="text" icon={<MenuOutlined />} onClick={() => setDrawerOpen(true)} />}
-          {isDesktop && <Button type="text" icon={<MenuOutlined />} onClick={() => setSiderCollapsed(!siderCollapsed)} />}
-          <Typography.Text strong style={{ flex: 1 }}>{t('portal.welcome')}, {displayName}</Typography.Text>
+          {isDesktop && (
+            <Button
+              type="text"
+              icon={<MenuOutlined />}
+              onClick={() => setSiderCollapsed(!siderCollapsed)}
+            />
+          )}
+          <Typography.Text strong style={{ flex: 1 }}>
+            {t('portal.welcome')}, {displayName}
+          </Typography.Text>
           {headerActions}
         </Header>
         <Content style={{ margin: 24, padding: 24, minHeight: 280, overflow: 'auto' }}>

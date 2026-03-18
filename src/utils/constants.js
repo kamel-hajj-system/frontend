@@ -1,13 +1,10 @@
-/**
- * App constants – no dummy data. Enums from backend can be added here when available.
- */
-
 export const USER_TYPES = {
   COMPANY: 'Company',
   SERVICE_CENTER: 'ServiceCenter',
+  SUPER_ADMIN: 'SuperAdmin',
 };
 
-export const ROLES = ['Admin', 'Supervisor', 'Employee'];
+export const ROLES = ['Supervisor', 'EmpRead', 'EmpManage'];
 
 export const ROUTES = {
   HOME: '/',
@@ -16,76 +13,57 @@ export const ROUTES = {
   SIGN_UP_NORMAL: '/sign-up/normal',
   SIGN_UP_SERVICE_CENTER: '/sign-up/service-center',
   PORTAL: '/portal',
-  PORTAL_DASHBOARD: '/portal/dashboard',
+  PORTAL_HR_DASHBOARD: '/portal/hr/dashboard',
+  PORTAL_HR_USERS: '/portal/hr/users',
+  PORTAL_HR_SUPERVISORS: '/portal/hr/supervisors',
+  PORTAL_HR_ATTENDANCE: '/portal/hr/attendance',
   PORTAL_COMPANY_DASHBOARD: '/portal/company/dashboard',
+  PORTAL_COMPANY_EMPLOYEES: '/portal/company/employees',
+  PORTAL_COMPANY_ATTENDANCE_DEPARTURE: '/portal/company/attendance-departure',
   PORTAL_SERVICE_CENTER_DASHBOARD: '/portal/service-center/dashboard',
-  PORTAL_TEST_PERMISSION_ROLE: '/portal/test-permission-role',
+  PORTAL_RECEPTION_DASHBOARD: '/portal/reception/dashboard',
   SUPER_ADMIN: '/superadmin',
   SUPER_ADMIN_DASHBOARD: '/superadmin/dashboard',
+  SUPER_ADMIN_ACCESS: '/superadmin/access',
+  SUPER_ADMIN_ASSIGN_SUPERVISOR: '/superadmin/assign-supervisor',
+  SUPER_ADMIN_SUPERVISORS: '/superadmin/supervisors',
   SUPER_ADMIN_LOCATIONS: '/superadmin/locations',
   SUPER_ADMIN_SHIFTS: '/superadmin/shifts',
-  SUPER_ADMIN_USERS: '/superadmin/users',
-  SUPER_ADMIN_PERMISSIONS: '/superadmin/permissions',
-  SUPER_ADMIN_GROUPS: '/superadmin/groups',
   FORBIDDEN: '/403',
 };
 
-/** Permission names (must match backend). */
-export const PERMISSIONS = {
-  DASHBOARD_VIEW: 'dashboard.view',
-  USERS_VIEW: 'users.view',
-  USERS_CREATE: 'users.create',
-  USERS_UPDATE: 'users.update',
-  USERS_DELETE: 'users.delete',
-  USERS_ASSIGN_ROLE: 'users.assign_role',
-  USERS_ASSIGN_PERMISSIONS: 'users.assign_permissions',
-  LOCATIONS_VIEW: 'locations.view',
-  LOCATIONS_MANAGE: 'locations.manage',
-  SHIFTS_VIEW: 'shifts.view',
-  SHIFTS_MANAGE: 'shifts.manage',
-  PERMISSIONS_VIEW: 'permissions.view',
-  PERMISSIONS_MANAGE: 'permissions.manage',
-  TEST_PERMISSION_ROLE: 'test.permission_role',
-};
-
-/** Permission name options for dropdown (value + label). */
-export const PERMISSION_NAME_OPTIONS = Object.entries(PERMISSIONS).map(([key, value]) => ({
-  value,
-  label: value,
-}));
-
-/** Map permission name -> page/module label (for "pages this user can see"). */
-export const PERMISSION_TO_PAGE_LABEL = {
-  'dashboard.view': 'Portal — Dashboard',
-  'users.view': 'Super Admin — Users',
-  'users.create': 'Super Admin — Create User',
-  'users.update': 'Super Admin — Update User',
-  'users.delete': 'Super Admin — Delete User',
-  'users.assign_role': 'Super Admin — Assign Role',
-  'users.assign_permissions': 'Super Admin — Assign Permissions',
-  'locations.view': 'Super Admin — Locations (view)',
-  'locations.manage': 'Super Admin — Locations (manage)',
-  'shifts.view': 'Super Admin — Shifts (view)',
-  'shifts.manage': 'Super Admin — Shifts (manage)',
-  'permissions.view': 'Super Admin — Permissions (view)',
-  'permissions.manage': 'Super Admin — Permissions (manage)',
-  'test.permission_role': 'Portal — Test Permission and Role',
-};
-
-/** Module/Page options for permission dropdown. */
-export const PERMISSION_MODULE_OPTIONS = [
-  { value: 'Portal', label: 'Portal' },
-  { value: 'Super Admin', label: 'Super Admin' },
-  { value: 'Users', label: 'Users' },
-  { value: 'Locations', label: 'Locations' },
-  { value: 'Shifts', label: 'Shifts' },
-  { value: 'Permissions', label: 'Permissions' },
+// Access control codes (stored in DB). Keep stable.
+export const ACCESS_TREE = [
+  {
+    key: 'module.portal',
+    titleAr: 'البوابة',
+    titleEn: 'Portal',
+    children: [
+      { key: 'portal.company.dashboard', titleAr: 'لوحة الشركة', titleEn: 'Company Dashboard' },
+      { key: 'portal.servicecenter.dashboard', titleAr: 'لوحة مركز الخدمة', titleEn: 'Service Center Dashboard' },
+    ],
+  },
+  {
+    key: 'module.hr',
+    titleAr: 'الموارد البشرية',
+    titleEn: 'HR',
+    children: [
+      { key: 'hr.dashboard', titleAr: 'لوحة الموارد البشرية', titleEn: 'HR Dashboard' },
+      { key: 'hr.users', titleAr: 'مستخدمو النظام (HR)', titleEn: 'System Users (HR)' },
+    ],
+  },
+  {
+    key: 'module.reception',
+    titleAr: 'الاستقبال',
+    titleEn: 'Reception',
+    children: [
+      { key: 'reception.dashboard', titleAr: 'لوحة الاستقبال', titleEn: 'Reception Dashboard' },
+    ],
+  },
 ];
 
-/** Storage key for auth token (sessionStorage for security; no long-lived localStorage) */
 export const AUTH_TOKEN_KEY = 'kamel_auth_token';
 
-/** Default language */
 export const DEFAULT_LANG = 'ar';
 
 export const LANGUAGES = [

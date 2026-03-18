@@ -4,7 +4,7 @@ import { Form, Input, Button, Card, Alert, Typography } from 'antd';
 import { LoginOutlined } from '@ant-design/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { ROUTES, PERMISSIONS } from '../../utils/constants';
+import { ROUTES } from '../../utils/constants';
 
 const { Title, Text } = Typography;
 
@@ -23,17 +23,9 @@ export function LoginPage() {
     try {
       const data = await login(values.email, values.password);
       const user = data?.user;
-      // Redirect to super admin dashboard if super admin or has dashboard permission (e.g. from group)
-      const permNames = user?.permissionNames || [];
-      const canAccessSuperAdminDashboard = user?.isSuperAdmin || permNames.includes(PERMISSIONS.USERS_VIEW);
-      const target = canAccessSuperAdminDashboard
+      const target = user?.isSuperAdmin
         ? ROUTES.SUPER_ADMIN_DASHBOARD
-        : from
-          ? from
-          : user?.userType === 'ServiceCenter'
-            ? ROUTES.PORTAL_SERVICE_CENTER_DASHBOARD
-            : ROUTES.PORTAL_COMPANY_DASHBOARD;
-      // Defer navigation so AuthContext state (user/permissions) is committed before the new route checks permission
+        : from || ROUTES.PORTAL;
       setTimeout(() => navigate(target, { replace: true }), 0);
     } catch (err) {
       setError(err?.details || err?.message || t('auth.loginError'));
@@ -47,12 +39,7 @@ export function LoginPage() {
           <LoginOutlined /> {t('auth.login')}
         </Title>
         {error && <Alert type="error" message={error} showIcon style={{ marginBottom: 16 }} />}
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          autoComplete="off"
-        >
+        <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
           <Form.Item
             name="email"
             label={t('auth.email')}

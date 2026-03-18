@@ -3,6 +3,7 @@
  * No hardcoded URLs; uses relative /api for same-origin.
  */
 import { AUTH_TOKEN_KEY } from '../utils/constants';
+import { refresh as refreshAuth } from './auth.js';
 
 const API_BASE = '/api';
 
@@ -19,8 +20,28 @@ export async function apiRequest(path, options = {}) {
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(url, { ...options, headers });
-  const data = await res.json().catch(() => ({}));
+  const doFetch = async () => {
+    const res = await fetch(url, { ...options, headers, credentials: 'include' });
+    const data = await res.json().catch(() => ({}));
+    return { res, data };
+  };
+
+  let { res, data } = await doFetch();
+
+  if (!res.ok) {
+    // Auto-refresh once on 401 then retry request.
+    if (res.status === 401 && path !== '/users/refresh') {
+      try {
+        await refreshAuth();
+        // update auth header with new token
+        const newToken = getToken();
+        if (newToken) headers.Authorization = `Bearer ${newToken}`;
+        ({ res, data } = await doFetch());
+      } catch {
+        // fall through
+      }
+    }
+  }
 
   if (!res.ok) {
     const rawDetails = data?.details ?? data?.error;
