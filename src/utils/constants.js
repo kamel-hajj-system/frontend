@@ -18,9 +18,11 @@ export const ROUTES = {
   PORTAL_HR_SUPERVISORS: '/portal/hr/supervisors',
   PORTAL_HR_ATTENDANCE: '/portal/hr/attendance',
   PORTAL_COMPANY_DASHBOARD: '/portal/company/dashboard',
+  PORTAL_COMPANY_NOTIFICATIONS: '/portal/company/notifications',
   PORTAL_COMPANY_EMPLOYEES: '/portal/company/employees',
   PORTAL_COMPANY_ATTENDANCE_DEPARTURE: '/portal/company/attendance-departure',
   PORTAL_SERVICE_CENTER_DASHBOARD: '/portal/service-center/dashboard',
+  PORTAL_SERVICE_CENTER_NOTIFICATIONS: '/portal/service-center/notifications',
   PORTAL_RECEPTION_DASHBOARD: '/portal/reception/dashboard',
   SUPER_ADMIN: '/superadmin',
   SUPER_ADMIN_DASHBOARD: '/superadmin/dashboard',
@@ -29,6 +31,10 @@ export const ROUTES = {
   SUPER_ADMIN_SUPERVISORS: '/superadmin/supervisors',
   SUPER_ADMIN_LOCATIONS: '/superadmin/locations',
   SUPER_ADMIN_SHIFTS: '/superadmin/shifts',
+  /** Super Admin: received notifications (inbox). */
+  SUPER_ADMIN_NOTIFICATION_INBOX: '/superadmin/notification-inbox',
+  /** Super Admin: broadcast / send to users. */
+  SUPER_ADMIN_NOTIFICATIONS: '/superadmin/notifications',
   FORBIDDEN: '/403',
 };
 

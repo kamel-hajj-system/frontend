@@ -12,7 +12,20 @@
     "logout": "Sign out",
     "portal": "Portal",
     "dashboard": "Dashboard",
-    "superadmin": "Super Admin"
+    "superadmin": "Super Admin",
+    "notifications": "Notifications"
+  },
+  "notifications": {
+    "dropdownTitle": "Notifications",
+    "showAll": "View all notifications",
+    "emptyPreview": "No notifications yet",
+    "webPushTitle": "Push notifications (this device)",
+    "webPushHint": "Get alerts when the app is closed or in the background. On iPhone, add Kamel to your Home Screen first (Safari 16.4+). Requires HTTPS in production.",
+    "webPushEnable": "Enable push notifications",
+    "webPushDisable": "Turn off push on this device",
+    "webPushNotSupported": "This browser does not support push notifications.",
+    "webPushServerOff": "Push is not enabled on the server yet (admin must set VAPID keys).",
+    "webPushDenied": "Permission was blocked. Allow notifications in your browser settings."
   },
   "auth": {
     "email": "Email or identifier",

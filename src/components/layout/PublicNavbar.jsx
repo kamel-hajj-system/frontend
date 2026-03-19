@@ -12,11 +12,13 @@ import {
   SunOutlined,
   MoonOutlined,
   MenuOutlined,
+  BellOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { ROUTES } from '../../utils/constants';
+import { ROUTES, USER_TYPES } from '../../utils/constants';
+import { NotificationBellDropdown } from '../common/NotificationBellDropdown';
 
 const { Text } = Typography;
 
@@ -33,6 +35,11 @@ export function PublicNavbar() {
   const isDesktop = screens.md ?? true;
 
   const displayName = user?.fullNameAr || user?.fullName || user?.email || '';
+  const notificationsRoute = isSuperAdmin
+    ? ROUTES.SUPER_ADMIN_NOTIFICATION_INBOX
+    : user?.userType === USER_TYPES.SERVICE_CENTER
+      ? ROUTES.PORTAL_SERVICE_CENTER_NOTIFICATIONS
+      : ROUTES.PORTAL_COMPANY_NOTIFICATIONS;
 
   const handleLogout = async () => {
     await logout();
@@ -79,6 +86,12 @@ export function PublicNavbar() {
     } else {
       items.push({ key: ROUTES.PORTAL_DASHBOARD, icon: <AppstoreOutlined />, label: t('nav.portal'), onClick: () => navigate(ROUTES.PORTAL_DASHBOARD) });
     }
+    items.push({
+      key: notificationsRoute,
+      icon: <BellOutlined />,
+      label: t('nav.notifications') || 'Notifications',
+      onClick: () => navigate(notificationsRoute),
+    });
     return items;
   };
 
@@ -110,6 +123,9 @@ export function PublicNavbar() {
               <Button type="text" icon={<GlobalOutlined />} />
             </Dropdown>
             <Button type="text" icon={theme === 'dark' ? <SunOutlined /> : <MoonOutlined />} onClick={toggleTheme} />
+            {isAuthenticated && (
+              <NotificationBellDropdown allNotificationsPath={notificationsRoute} placement="bottomRight" />
+            )}
             {isAuthenticated && (
               <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
                 <Button icon={<LogoutOutlined />}>{t('nav.logout')}</Button>

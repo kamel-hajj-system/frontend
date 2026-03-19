@@ -13,11 +13,13 @@ import {
   MoonOutlined,
   MenuOutlined,
   UserOutlined,
+  BellOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { ROUTES } from '../utils/constants';
+import { NotificationBellDropdown } from '../components/common/NotificationBellDropdown';
 
 const { Header, Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -95,6 +97,12 @@ export function SuperAdminLayout() {
       label: isAr ? 'الورديات' : 'Shifts',
       onClick: () => { navigate(ROUTES.SUPER_ADMIN_SHIFTS); setDrawerOpen(false); },
     },
+    {
+      key: ROUTES.SUPER_ADMIN_NOTIFICATIONS,
+      icon: <BellOutlined />,
+      label: isAr ? 'إرسال إشعارات' : 'Send Notifications',
+      onClick: () => { navigate(ROUTES.SUPER_ADMIN_NOTIFICATIONS); setDrawerOpen(false); },
+    },
   ];
 
   const isDarkSider = theme === 'dark';
@@ -133,6 +141,7 @@ export function SuperAdminLayout() {
       <Dropdown menu={{ items: userMenuItems }} placement="bottomEnd">
         <Button icon={<UserOutlined />}>{isAr ? 'خروج' : 'Logout'}</Button>
       </Dropdown>
+      <NotificationBellDropdown allNotificationsPath={ROUTES.SUPER_ADMIN_NOTIFICATION_INBOX} placement="bottomRight" />
     </>
   );
 

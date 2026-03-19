@@ -17,6 +17,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { ROUTES, USER_TYPES } from '../utils/constants';
+import { NotificationBellDropdown } from '../components/common/NotificationBellDropdown';
 
 const { Header, Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -64,6 +65,10 @@ export function PortalLayout() {
     user?.userType === USER_TYPES.SERVICE_CENTER
       ? t('portal.serviceCenterDashboardTitle')
       : t('portal.companyDashboardTitle');
+  const notificationsRoute =
+    user?.userType === USER_TYPES.SERVICE_CENTER
+      ? ROUTES.PORTAL_SERVICE_CENTER_NOTIFICATIONS
+      : ROUTES.PORTAL_COMPANY_NOTIFICATIONS;
 
   const sidebarMenuItems = [
     {
@@ -209,6 +214,7 @@ export function PortalLayout() {
       <Dropdown menu={{ items: userMenuItems }} placement="bottomEnd">
         <Button icon={<UserOutlined />}>{t('nav.logout')}</Button>
       </Dropdown>
+      <NotificationBellDropdown allNotificationsPath={notificationsRoute} placement="bottomRight" />
     </>
   );
 

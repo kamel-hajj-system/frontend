@@ -35,3 +35,8 @@
 .kamel-table-wrap .ant-table {
   min-width: 100%;
 }
+
+/* Notification preview rows: subtle hover (uses app tokens so light/dark match) */
+.kamel-notif-dropdown-panel .kamel-notif-dropdown-item:hover {
+  background-color: var(--color-muted) !important;
+}

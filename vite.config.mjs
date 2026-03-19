@@ -8,6 +8,16 @@ export default defineConfig({
     VitePWA({
       registerType: 'prompt',
       injectRegister: null,
+      devOptions: {
+        enabled: true,
+        type: 'module',
+      },
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+      },
       manifest: {
         name: 'Kamel System',
         short_name: 'Kamel',
@@ -23,12 +33,6 @@ export default defineConfig({
         icons: [
           { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
-        ],
-      },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        runtimeCaching: [
-          { urlPattern: /^https?:\/\/.*\/api\/.*/i, handler: 'NetworkFirst', options: { cacheName: 'api-cache', networkTimeoutSeconds: 10 } },
         ],
       },
     }),

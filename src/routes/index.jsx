@@ -14,6 +14,7 @@ import { HomePage } from '../pages/public/HomePage';
 import { LoginPage } from '../pages/public/LoginPage';
 import { SignUpNormalPage } from '../pages/public/SignUpNormalPage';
 import { SignUpServiceCenterPage } from '../pages/public/SignUpServiceCenterPage';
+import { NotificationsPage } from '../pages/portal/public/NotificationsPage';
 import { CompanyDashboardPage } from '../pages/portal/company/CompanyDashboardPage';
 import { EmployeesPage } from '../pages/portal/company/Employees/EmployeesPage';
 import { AttendanceAndDeparturePage } from '../pages/portal/company/public/AttendanceAndDeparture/AttendanceAndDeparturePage';
@@ -29,6 +30,7 @@ import { AssignSupervisorPage } from '../pages/superadmin/AssignSupervisorPage';
 import { SupervisorsManagementPage } from '../pages/superadmin/SupervisorsManagementPage';
 import { LocationsPage } from '../pages/superadmin/LocationsPage';
 import { ShiftsPage } from '../pages/superadmin/ShiftsPage';
+import { SendNotificationsPage } from '../pages/superadmin/SendNotificationsPage';
 import { ForbiddenPage } from '../pages/ForbiddenPage';
 
 const router = createBrowserRouter([
@@ -90,6 +92,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: 'company/notifications',
+        element: (
+          <RequirePortalCompany>
+            <NotificationsPage />
+          </RequirePortalCompany>
+        ),
+      },
+      {
         path: 'company/employees',
         element: (
           <RequirePortalCompany>
@@ -110,6 +120,14 @@ const router = createBrowserRouter([
         element: (
           <RequirePortalServiceCenter>
             <ServiceCenterDashboardPage />
+          </RequirePortalServiceCenter>
+        ),
+      },
+      {
+        path: 'service-center/notifications',
+        element: (
+          <RequirePortalServiceCenter>
+            <NotificationsPage />
           </RequirePortalServiceCenter>
         ),
       },
@@ -150,6 +168,8 @@ const router = createBrowserRouter([
       { path: 'supervisors', element: <SupervisorsManagementPage /> },
       { path: 'locations', element: <LocationsPage /> },
       { path: 'shifts', element: <ShiftsPage /> },
+      { path: 'notification-inbox', element: <NotificationsPage /> },
+      { path: 'notifications', element: <SendNotificationsPage /> },
     ],
   },
   { path: '*', element: <Navigate to={ROUTES.HOME} replace /> },
