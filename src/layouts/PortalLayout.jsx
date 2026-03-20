@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Layout, Menu, Button, Dropdown, Drawer, Typography, Grid } from 'antd';
 import {
+  BellOutlined,
   DashboardOutlined,
   InboxOutlined,
   LogoutOutlined,
@@ -91,6 +92,15 @@ export function PortalLayout() {
               setDrawerOpen(false);
             },
           },
+          {
+            key: ROUTES.PORTAL_COMPANY_SEND_NOTIFICATIONS,
+            icon: <BellOutlined />,
+            label: t('portal.supervisorSendNotificationsTitle'),
+            onClick: () => {
+              navigate(ROUTES.PORTAL_COMPANY_SEND_NOTIFICATIONS);
+              setDrawerOpen(false);
+            },
+          },
         ]
       : []),
     ...(user?.userType === USER_TYPES.COMPANY
@@ -145,6 +155,18 @@ export function PortalLayout() {
                   setDrawerOpen(false);
                 },
               },
+              ...(user?.role === 'Supervisor' || user?.role === 'EmpManage'
+                ? [
+                    {
+                      key: ROUTES.PORTAL_HR_SEND_NOTIFICATIONS,
+                      label: t('portal.hrSendNotificationsTitle'),
+                      onClick: () => {
+                        navigate(ROUTES.PORTAL_HR_SEND_NOTIFICATIONS);
+                        setDrawerOpen(false);
+                      },
+                    },
+                  ]
+                : []),
             ],
           },
         ]
@@ -280,9 +302,7 @@ export function PortalLayout() {
               onClick={() => setSiderCollapsed(!siderCollapsed)}
             />
           )}
-          <Typography.Text strong style={{ flex: 1 }}>
-            {t('portal.welcome')}, {displayName}
-          </Typography.Text>
+          <div style={{ flex: 1 }} />
           {headerActions}
         </Header>
         <Content style={{ margin: 24, padding: 24, minHeight: 280, overflow: 'auto' }}>

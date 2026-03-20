@@ -25,7 +25,8 @@
     "webPushDisable": "إيقاف الدفع على هذا الجهاز",
     "webPushNotSupported": "المتصفح لا يدعم إشعارات الدفع.",
     "webPushServerOff": "الخادم لم يفعّل الدفع بعد (يحتاج المشرف إعداد مفاتيح VAPID).",
-    "webPushDenied": "تم رفض الإذن. اسمح بالإشعارات من إعدادات المتصفح."
+    "webPushDenied": "تم رفض الإذن. اسمح بالإشعارات من إعدادات المتصفح.",
+    "fromSender": "من: {{name}}"
   },
   "auth": {
     "email": "البريد الإلكتروني أو المعرف",
@@ -94,6 +95,8 @@
     "hrUsersTitle": "مستخدمو النظام (HR)",
     "hrSupervisorsTitle": "المشرفون والموظفون",
     "hrAttendanceTitle": "الحضور والانصراف (HR)",
+    "hrSendNotificationsTitle": "إرسال إشعارات (الموارد البشرية)",
+    "supervisorSendNotificationsTitle": "إشعارات للموظفين",
     "employeesTitle": "الموظفون",
     "attendanceDepartureTitle": "الحضور والانصراف",
     "attendanceDepartureIntro": "هذه صفحة الحضور والانصراف (تجهيز). سيتم إضافة وظائف الحضور والانصراف لاحقاً.",

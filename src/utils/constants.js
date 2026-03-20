@@ -17,10 +17,13 @@ export const ROUTES = {
   PORTAL_HR_USERS: '/portal/hr/users',
   PORTAL_HR_SUPERVISORS: '/portal/hr/supervisors',
   PORTAL_HR_ATTENDANCE: '/portal/hr/attendance',
+  PORTAL_HR_SEND_NOTIFICATIONS: '/portal/hr/send-notifications',
   PORTAL_COMPANY_DASHBOARD: '/portal/company/dashboard',
   PORTAL_COMPANY_NOTIFICATIONS: '/portal/company/notifications',
   PORTAL_COMPANY_EMPLOYEES: '/portal/company/employees',
   PORTAL_COMPANY_ATTENDANCE_DEPARTURE: '/portal/company/attendance-departure',
+  /** Company supervisor: notify direct employees + schedule */
+  PORTAL_COMPANY_SEND_NOTIFICATIONS: '/portal/company/send-notifications',
   PORTAL_SERVICE_CENTER_DASHBOARD: '/portal/service-center/dashboard',
   PORTAL_SERVICE_CENTER_NOTIFICATIONS: '/portal/service-center/notifications',
   PORTAL_RECEPTION_DASHBOARD: '/portal/reception/dashboard',

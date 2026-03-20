@@ -25,7 +25,8 @@
     "webPushDisable": "Turn off push on this device",
     "webPushNotSupported": "This browser does not support push notifications.",
     "webPushServerOff": "Push is not enabled on the server yet (admin must set VAPID keys).",
-    "webPushDenied": "Permission was blocked. Allow notifications in your browser settings."
+    "webPushDenied": "Permission was blocked. Allow notifications in your browser settings.",
+    "fromSender": "From: {{name}}"
   },
   "auth": {
     "email": "Email or identifier",
@@ -94,6 +95,8 @@
     "hrUsersTitle": "System Users (HR)",
     "hrSupervisorsTitle": "Supervisors & Employees",
     "hrAttendanceTitle": "Attendance & Departure (HR)",
+    "hrSendNotificationsTitle": "Send notifications (HR)",
+    "supervisorSendNotificationsTitle": "Notify employees",
     "employeesTitle": "Employees",
     "attendanceDepartureTitle": "Attendance & Departure",
     "attendanceDepartureIntro": "This is the Attendance & Departure page (placeholder). Features will be added soon.",

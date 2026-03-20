@@ -23,6 +23,8 @@ import { HrDashboardPage } from '../pages/portal/company/hr/HrDashboardPage';
 import { HrUsersPage } from '../pages/portal/company/hr/HrUsersPage';
 import { HrSupervisorsPage } from '../pages/portal/company/hr/HrSupervisorsPage';
 import { HrAttendancePage } from '../pages/portal/company/hr/HrAttendancePage';
+import { HrSendNotificationsPage } from '../pages/portal/company/hr/HrSendNotificationsPage';
+import { SupervisorSendNotificationsPage } from '../pages/portal/company/SupervisorSendNotificationsPage';
 import { ReceptionDashboardPage } from '../pages/portal/company/reception/ReceptionDashboardPage';
 import { SuperAdminDashboardPage } from '../pages/superadmin/SuperAdminDashboardPage';
 import { AccessControlPage } from '../pages/superadmin/AccessControlPage';
@@ -108,6 +110,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: 'company/send-notifications',
+        element: (
+          <RequirePortalCompany>
+            <SupervisorSendNotificationsPage />
+          </RequirePortalCompany>
+        ),
+      },
+      {
         path: 'company/attendance-departure',
         element: (
           <RequirePortalCompany>
@@ -146,6 +156,10 @@ const router = createBrowserRouter([
       {
         path: 'hr/attendance',
         element: <HrAttendancePage />,
+      },
+      {
+        path: 'hr/send-notifications',
+        element: <HrSendNotificationsPage />,
       },
       {
         path: 'reception/dashboard',

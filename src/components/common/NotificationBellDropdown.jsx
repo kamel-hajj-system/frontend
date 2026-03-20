@@ -157,6 +157,11 @@ export function NotificationBellDropdown({ allNotificationsPath, placement = 'bo
             {preview.map((item) => {
               const title = item.notification?.title || (isAr ? 'إشعار' : 'Notice');
               const msg = item.notification?.message || '';
+              const from = item.notification?.createdBy;
+              const fromName =
+                from &&
+                ((isAr ? from.fullNameAr || from.fullName : from.fullName || from.fullNameAr) || from.email || '')
+                  .trim();
               const time = formatTime(item.notification?.createdAt || item.createdAt);
               const unread = !item.isRead;
               return (
@@ -198,6 +203,18 @@ export function NotificationBellDropdown({ allNotificationsPath, placement = 'bo
                         />
                       )}
                     </div>
+                    {fromName ? (
+                      <Typography.Text
+                        style={{
+                          display: 'block',
+                          fontSize: 11,
+                          marginTop: 4,
+                          color: token.colorTextTertiary,
+                        }}
+                      >
+                        {t('notifications.fromSender', { name: fromName })}
+                      </Typography.Text>
+                    ) : null}
                     <Typography.Text
                       style={{
                         display: 'block',

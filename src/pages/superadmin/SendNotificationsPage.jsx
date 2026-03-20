@@ -1,14 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Card, Input, message, Select, Space, Tag } from 'antd';
+import { Button, Card, Divider, Input, message, Select, Space, Table, Tag, Typography } from 'antd';
 import { BellOutlined, SendOutlined, ReloadOutlined } from '@ant-design/icons';
 import { ResponsiveTable } from '../../components/common/ResponsiveTable';
 import { USER_TYPES } from '../../utils/constants';
 import { getLocations } from '../../api/locations';
 import { getUsers } from '../../api/users';
-import { sendNotifications } from '../../api/notifications';
+import {
+  sendNotifications,
+  superadminScheduleNotification,
+  getMyScheduledNotifications,
+  cancelScheduledNotification,
+} from '../../api/notifications';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { NotificationSchedulePanel } from '../../components/notifications/NotificationSchedulePanel';
 
 const { TextArea } = Input;
+const { Title } = Typography;
 
 export function SendNotificationsPage() {
   const { lang } = useLanguage();
@@ -25,6 +32,9 @@ export function SendNotificationsPage() {
   const [sendToAllFiltered, setSendToAllFiltered] = useState(false);
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  const [scheduling, setScheduling] = useState(false);
+  const [scheduledRows, setScheduledRows] = useState([]);
+  const [loadingSched, setLoadingSched] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -40,7 +50,9 @@ export function SendNotificationsPage() {
         }),
         getLocations(),
       ]);
-      const filteredUsers = (u.data || []).filter((x) => x.userType === USER_TYPES.COMPANY || x.userType === USER_TYPES.SERVICE_CENTER);
+      const filteredUsers = (u.data || []).filter(
+        (x) => x.userType === USER_TYPES.COMPANY || x.userType === USER_TYPES.SERVICE_CENTER
+      );
       setUsers(filteredUsers);
       setLocations(l || []);
     } catch (err) {
@@ -50,9 +62,44 @@ export function SendNotificationsPage() {
     }
   }, [isAr, locationId, q, userType]);
 
+  const loadScheduled = useCallback(async () => {
+    setLoadingSched(true);
+    try {
+      const res = await getMyScheduledNotifications();
+      const all = res?.data || [];
+      setScheduledRows(all.filter((r) => r.scope === 'superadmin'));
+    } catch {
+      setScheduledRows([]);
+    } finally {
+      setLoadingSched(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    loadScheduled();
+  }, [loadScheduled]);
+
+  const recipientIdsForSchedule = useMemo(() => {
+    if (sendToAllFiltered) return users.map((u) => u.id);
+    return selectedRowKeys;
+  }, [sendToAllFiltered, selectedRowKeys, users]);
+
+  const cancelJob = useCallback(
+    async (id) => {
+      try {
+        await cancelScheduledNotification(id);
+        message.success(isAr ? 'أُلغيت الجدولة' : 'Cancelled');
+        await loadScheduled();
+      } catch (err) {
+        message.error(err?.message || (isAr ? 'تعذر الإلغاء' : 'Cancel failed'));
+      }
+    },
+    [isAr, loadScheduled]
+  );
 
   const columns = useMemo(
     () => [
@@ -67,10 +114,56 @@ export function SendNotificationsPage() {
       {
         title: isAr ? 'الموقع' : 'Location',
         key: 'location',
-        render: (_, row) => (row.shiftLocation ? (isAr ? row.shiftLocation.locationAr || row.shiftLocation.name : row.shiftLocation.name) : '—'),
+        render: (_, row) =>
+          row.shiftLocation ? (isAr ? row.shiftLocation.locationAr || row.shiftLocation.name : row.shiftLocation.name) : '—',
       },
     ],
     [isAr]
+  );
+
+  const schedColumns = useMemo(
+    () => [
+      {
+        title: isAr ? 'النوع' : 'Kind',
+        dataIndex: 'scheduleKind',
+        key: 'scheduleKind',
+        width: 110,
+        render: (k) => (k === 'ONCE' ? (isAr ? 'مرة' : 'Once') : isAr ? 'يومي' : 'Daily'),
+      },
+      {
+        title: isAr ? 'متى' : 'When',
+        key: 'when',
+        render: (_, row) => {
+          if (row.scheduleKind === 'ONCE' && row.scheduledAt) {
+            return new Date(row.scheduledAt).toLocaleString(isAr ? 'ar-SA' : 'en-US', { hour12: false });
+          }
+          if (row.scheduleKind === 'DAILY_RANGE') {
+            const a = row.rangeStartDate ? new Date(row.rangeStartDate).toLocaleDateString(isAr ? 'ar-SA' : 'en-US') : '';
+            const b = row.rangeEndDate ? new Date(row.rangeEndDate).toLocaleDateString(isAr ? 'ar-SA' : 'en-US') : '';
+            return `${a} → ${b} @ ${row.dailyTimeLocal || ''}`;
+          }
+          return '—';
+        },
+      },
+      {
+        title: isAr ? 'العنوان' : 'Title',
+        dataIndex: 'title',
+        key: 'title',
+        ellipsis: true,
+        render: (v) => v || '—',
+      },
+      {
+        title: '',
+        key: 'actions',
+        width: 100,
+        render: (_, row) => (
+          <Button type="link" danger size="small" onClick={() => cancelJob(row.id)}>
+            {isAr ? 'إلغاء' : 'Cancel'}
+          </Button>
+        ),
+      },
+    ],
+    [isAr, cancelJob]
   );
 
   const send = async () => {
@@ -105,6 +198,36 @@ export function SendNotificationsPage() {
     }
   };
 
+  const schedule = async (schedulePayload) => {
+    if (!body.trim()) {
+      message.warning(isAr ? 'اكتب نص الإشعار' : 'Please enter notification text');
+      return;
+    }
+    if (recipientIdsForSchedule.length === 0) {
+      message.warning(
+        isAr
+          ? 'لا مستلمين: حدد صفوفًا أو فعّل الإرسال لكل المستخدمين المصفّاة'
+          : 'No recipients: select rows or enable send-to-all filtered'
+      );
+      return;
+    }
+    setScheduling(true);
+    try {
+      await superadminScheduleNotification({
+        title: title.trim() || undefined,
+        message: body.trim(),
+        userIds: recipientIdsForSchedule,
+        ...schedulePayload,
+      });
+      message.success(isAr ? 'تمت الجدولة' : 'Scheduled');
+      await loadScheduled();
+    } catch (err) {
+      message.error(err?.message || (isAr ? 'فشلت الجدولة' : 'Schedule failed'));
+    } finally {
+      setScheduling(false);
+    }
+  };
+
   return (
     <Card
       title={
@@ -114,7 +237,13 @@ export function SendNotificationsPage() {
         </Space>
       }
       extra={
-        <Button icon={<ReloadOutlined />} onClick={fetchData}>
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={() => {
+            fetchData();
+            loadScheduled();
+          }}
+        >
           {isAr ? 'تحديث' : 'Refresh'}
         </Button>
       }
@@ -178,10 +307,29 @@ export function SendNotificationsPage() {
             {isAr ? 'إرسال الإشعار' : 'Send notification'}
           </Button>
           <Tag color="blue">
-            {isAr ? `المحددون: ${selectedRowKeys.length}` : `Selected: ${selectedRowKeys.length}`}
+            {sendToAllFiltered
+              ? isAr
+                ? `المستَلَمون (تقديري): ${recipientIdsForSchedule.length}`
+                : `Recipients (estimate): ${recipientIdsForSchedule.length}`
+              : isAr
+                ? `المحددون: ${selectedRowKeys.length}`
+                : `Selected: ${selectedRowKeys.length}`}
           </Tag>
         </Space>
       </Space>
+
+      <Divider>{isAr ? 'جدولة (نفس المستلمين أعلاه)' : 'Schedule (same recipients as above)'}</Divider>
+      <NotificationSchedulePanel
+        isAr={isAr}
+        submitting={scheduling}
+        disabled={recipientIdsForSchedule.length === 0}
+        onSchedule={schedule}
+        timeZoneHint={
+          isAr
+            ? 'الجدولة تستخدم نفس المحددين، أو كل المستخدمين المصفّاة إذا كان خيار «الإرسال للجميع» مفعّلاً. الوقت: الرياض.'
+            : 'Scheduling uses current row selection, or all filtered users when «send to all filtered» is ON. Time zone: Riyadh.'
+        }
+      />
 
       <ResponsiveTable
         rowKey="id"
@@ -194,7 +342,19 @@ export function SendNotificationsPage() {
           preserveSelectedRowKeys: true,
         }}
       />
+
+      <Title level={5} style={{ marginTop: 24 }}>
+        {isAr ? 'مجدول (معلق)' : 'Pending scheduled'}
+      </Title>
+      <Table
+        rowKey="id"
+        loading={loadingSched}
+        size="small"
+        columns={schedColumns}
+        dataSource={scheduledRows}
+        pagination={false}
+        locale={{ emptyText: isAr ? 'لا شيء' : 'Nothing scheduled' }}
+      />
     </Card>
   );
 }
-

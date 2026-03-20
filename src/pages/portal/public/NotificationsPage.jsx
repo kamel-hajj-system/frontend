@@ -7,8 +7,17 @@ import { WebPushSettings } from '../../../components/pwa/WebPushSettings';
 
 const { Text, Paragraph } = Typography;
 
+function senderLabel(isAr, createdBy) {
+  if (!createdBy) return null;
+  const name =
+    (isAr ? createdBy.fullNameAr || createdBy.fullName : createdBy.fullName || createdBy.fullNameAr)?.trim() ||
+    createdBy.email ||
+    '';
+  return name || null;
+}
+
 export function NotificationsPage() {
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
   const isAr = lang === 'ar';
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState([]);
@@ -82,6 +91,11 @@ export function NotificationsPage() {
               }
               description={
                 <div>
+                  {senderLabel(isAr, item.notification?.createdBy) ? (
+                    <Paragraph type="secondary" style={{ marginBottom: 6, fontSize: 13 }}>
+                      {t('notifications.fromSender', { name: senderLabel(isAr, item.notification?.createdBy) })}
+                    </Paragraph>
+                  ) : null}
                   <Paragraph style={{ marginBottom: 8 }}>{item.notification?.message}</Paragraph>
                   <Text type="secondary">
                     {new Date(item.notification?.createdAt || item.createdAt).toLocaleString(
