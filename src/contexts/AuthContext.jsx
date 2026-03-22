@@ -55,10 +55,10 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (email, password) => {
     try {
-      const data = await apiLogin(email, password);
+      await apiLogin(email, password);
       const u = await getMe();
       setUser(u);
-      return data;
+      return u;
     } catch {
       // Do not trust login response for auth state. If /users/me fails, treat login as failed.
       setAuthToken(null);

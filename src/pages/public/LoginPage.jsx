@@ -5,6 +5,7 @@ import { LoginOutlined } from '@ant-design/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { ROUTES } from '../../utils/constants';
+import { getAuthenticatedLandingRoute } from '../../utils/authRedirect';
 
 const { Title, Text } = Typography;
 
@@ -21,11 +22,14 @@ export function LoginPage() {
   const onFinish = async (values) => {
     setError('');
     try {
-      const data = await login(values.email, values.password);
-      const user = data?.user;
-      const target = user?.isSuperAdmin
-        ? ROUTES.SUPER_ADMIN_DASHBOARD
-        : from || ROUTES.PORTAL;
+      const loggedInUser = await login(values.email, values.password);
+      const defaultDest = getAuthenticatedLandingRoute(loggedInUser);
+      const guestOnlyPaths =
+        !from ||
+        from === ROUTES.HOME ||
+        from === ROUTES.LOGIN ||
+        from.startsWith('/sign-up');
+      const target = guestOnlyPaths ? defaultDest : from;
       setTimeout(() => navigate(target, { replace: true }), 0);
     } catch (err) {
       setError(err?.details || err?.message || t('auth.loginError'));

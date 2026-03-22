@@ -1,19 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Layout } from 'antd';
 import { PublicNavbar } from '../components/layout/PublicNavbar';
+import { PublicContentScrollRefContext } from '../contexts/PublicContentScrollContext';
 
 const { Header, Content } = Layout;
 
 export function PublicLayout() {
+  const [contentScrollEl, setContentScrollEl] = useState(null);
+
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Header style={{ position: 'sticky', top: 0, zIndex: 50, width: '100%', padding: '0 24px', display: 'flex', alignItems: 'center' }}>
+    <PublicContentScrollRefContext.Provider value={contentScrollEl}>
+    <Layout
+      style={{
+        height: '100vh',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}
+    >
+      <Header
+        style={{
+          flexShrink: 0,
+          width: '100%',
+          padding: 0,
+          height: 'auto',
+          lineHeight: 'normal',
+          background: 'transparent',
+        }}
+      >
         <PublicNavbar />
       </Header>
-      <Content style={{ padding: '24px 16px', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+      {/* Scroll only this region so the navbar stays visible */}
+      <Content
+        ref={setContentScrollEl}
+        style={{
+          flex: 1,
+          minHeight: 0,
+          width: '100%',
+          maxWidth: '100%',
+          padding: 0,
+          margin: 0,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
         <Outlet />
       </Content>
     </Layout>
+    </PublicContentScrollRefContext.Provider>
   );
 }

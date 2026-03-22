@@ -1,10 +1,10 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ROUTES, USER_TYPES } from '../utils/constants';
+import { getAuthenticatedLandingRoute } from '../utils/authRedirect';
 
 /**
- * For login/sign up: redirect to portal or superadmin if already signed in.
+ * Guest-only routes (home, login, sign-up): signed-in users are sent to their app home.
  */
 export function PublicOnlyRoute({ children }) {
   const { user, isAuthenticated, loading } = useAuth();
@@ -17,10 +17,8 @@ export function PublicOnlyRoute({ children }) {
     );
   }
 
-  if (isAuthenticated) {
-    if (user?.isSuperAdmin) return <Navigate to={ROUTES.SUPER_ADMIN_DASHBOARD} replace />;
-    if (user?.userType === USER_TYPES.SERVICE_CENTER) return <Navigate to={ROUTES.PORTAL_SERVICE_CENTER_DASHBOARD} replace />;
-    return <Navigate to={ROUTES.PORTAL_COMPANY_DASHBOARD} replace />;
+  if (isAuthenticated && user) {
+    return <Navigate to={getAuthenticatedLandingRoute(user)} replace />;
   }
 
   return children;

@@ -1,0 +1,668 @@
+/* Public marketing home — scoped under .kamel-home */
+
+.kamel-home {
+  overflow-x: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kamel-home *,
+  .kamel-home *::before,
+  .kamel-home *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Offset for public navbar when using #hash links */
+.kamel-home-section[id] {
+  scroll-margin-top: 88px;
+}
+
+/* ——— Hero ——— */
+.kamel-home-hero {
+  position: relative;
+  min-height: min(82vh, 880px);
+  display: flex;
+  align-items: center;
+  padding: clamp(40px, 8vw, 88px) 24px clamp(56px, 10vw, 100px);
+  isolation: isolate;
+}
+
+.kamel-home-hero__mesh {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.kamel-home-hero__mesh::before {
+  content: '';
+  position: absolute;
+  width: 150%;
+  height: 90%;
+  top: -25%;
+  left: -25%;
+  background:
+    radial-gradient(ellipse 55% 50% at 25% 15%, var(--kamel-hero-glow-1, rgba(22, 119, 255, 0.22)), transparent 58%),
+    radial-gradient(ellipse 40% 45% at 90% 45%, var(--kamel-hero-glow-2, rgba(114, 46, 209, 0.16)), transparent 52%),
+    radial-gradient(ellipse 35% 40% at 60% 85%, var(--kamel-hero-glow-3, rgba(22, 163, 74, 0.08)), transparent 50%);
+  animation: kamel-home-float 22s ease-in-out infinite alternate;
+}
+
+.kamel-home-hero__mesh::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(128, 128, 128, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(128, 128, 128, 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(to bottom, black 25%, transparent 92%);
+  opacity: 0.7;
+}
+
+.kamel-home-hero__orbs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.kamel-home-hero__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(64px);
+  opacity: 0.45;
+  animation: kamel-home-orb-drift 28s ease-in-out infinite alternate;
+}
+
+.kamel-home-hero__orb--a {
+  width: min(420px, 55vw);
+  height: min(420px, 55vw);
+  top: 5%;
+  right: -8%;
+  background: var(--kamel-orb-a, rgba(22, 119, 255, 0.35));
+}
+
+.kamel-home-hero__orb--b {
+  width: min(280px, 40vw);
+  height: min(280px, 40vw);
+  bottom: 10%;
+  left: -5%;
+  background: var(--kamel-orb-b, rgba(114, 46, 209, 0.22));
+  animation-delay: -8s;
+}
+
+@keyframes kamel-home-float {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(2%, 2.5%) scale(1.04);
+  }
+}
+
+@keyframes kamel-home-orb-drift {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-4%, 6%) scale(1.08);
+  }
+}
+
+.kamel-home-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(40px, 6vw, 72px);
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 992px) {
+  .kamel-home-hero-grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  }
+}
+
+@media (max-width: 991px) {
+  .kamel-home-hero {
+    min-height: auto;
+    padding-bottom: 56px;
+  }
+
+  .kamel-home-hero-preview {
+    max-width: 420px;
+    margin-inline: auto;
+    width: 100%;
+  }
+}
+
+[dir='rtl'] .kamel-home-hero-grid {
+  direction: rtl;
+}
+
+[dir='rtl'] .kamel-home-hero-copy {
+  text-align: right;
+}
+
+.kamel-home-hero-copy {
+  max-width: 640px;
+}
+
+.kamel-home-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--kamel-pill-border, rgba(0, 0, 0, 0.08));
+  background: var(--kamel-pill-bg, rgba(255, 255, 255, 0.72));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  margin-bottom: 24px;
+}
+
+/* Glass preview panel (hero right) */
+.kamel-home-hero-preview {
+  position: relative;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ant-color-primary, #1677ff) 55%, transparent),
+    color-mix(in srgb, var(--ant-color-primary, #1677ff) 15%, transparent) 40%,
+    rgba(139, 92, 246, 0.35) 100%
+  );
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.06),
+    0 24px 64px -12px color-mix(in srgb, var(--ant-color-primary, #1677ff) 22%, transparent);
+}
+
+.kamel-home-hero-preview__inner {
+  border-radius: 19px;
+  padding: 20px 20px 24px;
+  background: var(--kamel-glass-bg, rgba(255, 255, 255, 0.78));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--kamel-glass-border, rgba(255, 255, 255, 0.6));
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kamel-home-hero-preview__chrome {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.kamel-home-hero-preview__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e2e8f0;
+}
+
+.kamel-home-hero-preview__dot:nth-child(1) {
+  background: #ff5f57;
+}
+.kamel-home-hero-preview__dot:nth-child(2) {
+  background: #febc2e;
+}
+.kamel-home-hero-preview__dot:nth-child(3) {
+  background: #28c840;
+}
+
+.kamel-home-hero-preview__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.kamel-home-hero-preview__row {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ant-color-primary, #1677ff) 12%, transparent),
+    color-mix(in srgb, var(--ant-color-primary, #1677ff) 6%, transparent)
+  );
+  animation: kamel-home-shimmer 3.5s ease-in-out infinite;
+}
+
+.kamel-home-hero-preview__row:nth-child(2) {
+  width: 88%;
+  animation-delay: 0.2s;
+}
+.kamel-home-hero-preview__row:nth-child(3) {
+  width: 72%;
+  animation-delay: 0.4s;
+}
+.kamel-home-hero-preview__row:nth-child(4) {
+  width: 94%;
+  animation-delay: 0.6s;
+}
+
+.kamel-home-hero-preview__cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.kamel-home-hero-preview__mini {
+  border-radius: 12px;
+  padding: 14px;
+  background: color-mix(in srgb, var(--ant-color-primary, #1677ff) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ant-color-primary, #1677ff) 15%, transparent);
+}
+
+.kamel-home-hero-preview__mini-bar {
+  height: 6px;
+  width: 48%;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--ant-color-primary, #1677ff) 35%, transparent);
+  margin-bottom: 8px;
+}
+
+.kamel-home-hero-preview__mini-line {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.06);
+  margin-bottom: 4px;
+}
+
+.kamel-home[data-theme='dark'] .kamel-home-hero-preview__mini-line {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@keyframes kamel-home-shimmer {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.kamel-home-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+.kamel-home-section {
+  padding-block: clamp(64px, 9vw, 112px);
+  position: relative;
+}
+
+.kamel-home-section-head {
+  margin-bottom: clamp(36px, 5vw, 52px);
+}
+
+.kamel-home-section-head--center {
+  text-align: center;
+  max-width: 720px;
+  margin-inline: auto;
+  margin-bottom: clamp(36px, 5vw, 52px);
+}
+
+.kamel-home-kicker {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  opacity: 0.9;
+}
+
+.kamel-home-title-h2 {
+  margin: 0;
+  letter-spacing: -0.03em;
+  font-weight: 800 !important;
+  line-height: 1.15 !important;
+}
+
+/* ——— Services ——— */
+.kamel-home-card-lift {
+  border-radius: 20px !important;
+  overflow: hidden;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    border-color 0.25s ease;
+  border: 1px solid transparent !important;
+  background-clip: padding-box;
+}
+
+.kamel-home-card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.08),
+    0 0 0 1px color-mix(in srgb, var(--ant-color-primary, #1677ff) 18%, transparent);
+}
+
+.kamel-home[data-theme='dark'] .kamel-home-card-lift:hover {
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.45),
+    0 0 0 1px color-mix(in srgb, var(--ant-color-primary, #1677ff) 25%, transparent);
+}
+
+.kamel-home-service-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  position: relative;
+  background: color-mix(in srgb, var(--ant-color-primary, #1677ff) 12%, transparent);
+  color: var(--ant-color-primary, #1677ff);
+}
+
+.kamel-home-service-icon-wrap::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 15px;
+  padding: 1px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--ant-color-primary, #1677ff) 45%, transparent), transparent 70%);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* ——— Products ——— */
+.kamel-home-product-ring {
+  position: relative;
+  border-radius: 22px;
+  padding: 1px;
+  height: 100%;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--ant-color-primary, #1677ff) 70%, transparent),
+    rgba(139, 92, 246, 0.4) 50%,
+    color-mix(in srgb, var(--ant-color-primary, #1677ff) 30%, transparent)
+  );
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease;
+}
+
+.kamel-home-product-ring:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px -12px color-mix(in srgb, var(--ant-color-primary, #1677ff) 35%, transparent);
+}
+
+.kamel-home-product-inner {
+  border-radius: 21px;
+  height: 100%;
+  background: var(--kamel-card-bg, #fff);
+  position: relative;
+  overflow: hidden;
+}
+
+.kamel-home-product-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--ant-color-primary, #1677ff) 12%, transparent), transparent 70%);
+  pointer-events: none;
+}
+
+.kamel-home-product-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--ant-color-primary, #1677ff) 10%, transparent);
+  color: var(--ant-color-primary, #1677ff);
+}
+
+.kamel-home-coming-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ant-color-warning, #faad14) 14%, transparent);
+  color: var(--ant-color-warning, #d48806);
+  border: 1px solid color-mix(in srgb, var(--ant-color-warning, #faad14) 35%, transparent);
+}
+
+/* ——— About visual ——— */
+.kamel-home-about-panel {
+  position: relative;
+  border-radius: 24px;
+  min-height: 320px;
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  border: 1px solid var(--kamel-about-border, rgba(0, 0, 0, 0.06));
+}
+
+.kamel-home-about-panel__bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 70% at 20% 20%, color-mix(in srgb, var(--ant-color-primary, #1677ff) 22%, transparent), transparent 55%),
+    radial-gradient(ellipse 60% 50% at 90% 80%, rgba(139, 92, 246, 0.12), transparent 50%),
+    linear-gradient(165deg, var(--kamel-about-bg-1, #f0f7ff), var(--kamel-about-bg-2, #faf5ff));
+  z-index: 0;
+}
+
+.kamel-home-about-panel__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 20%, transparent 75%);
+  opacity: 0.5;
+  z-index: 0;
+}
+
+.kamel-home[data-theme='dark'] .kamel-home-about-panel__grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+}
+
+.kamel-home-about-panel__content {
+  position: relative;
+  z-index: 1;
+  max-width: 300px;
+}
+
+.kamel-home-about-panel__logo-ring {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ant-color-primary, #1677ff), #7c3aed);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--ant-color-primary, #1677ff) 45%, transparent);
+}
+
+/* ——— Vision ——— */
+.kamel-home-vision {
+  border-radius: 28px;
+  padding: clamp(40px, 6vw, 72px);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--kamel-vision-border, rgba(0, 0, 0, 0.06));
+}
+
+.kamel-home-vision::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 80% at 0% 50%, color-mix(in srgb, var(--ant-color-primary, #1677ff) 14%, transparent), transparent 55%),
+    radial-gradient(ellipse 50% 60% at 100% 0%, rgba(139, 92, 246, 0.08), transparent 50%);
+  pointer-events: none;
+}
+
+.kamel-home-vision__quote-mark {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(4rem, 12vw, 7rem);
+  line-height: 0.85;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--ant-color-primary, #1677ff) 18%, transparent);
+  margin-bottom: 8px;
+  user-select: none;
+}
+
+.kamel-home-vision blockquote {
+  position: relative;
+  z-index: 1;
+}
+
+/* ——— Clients ——— */
+.kamel-home-client-logo {
+  height: 60px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  opacity: 0.88;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease;
+  border: 1px solid transparent;
+}
+
+.kamel-home-client-logo:hover {
+  opacity: 1;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.07);
+}
+
+.kamel-home[data-theme='dark'] .kamel-home-client-logo:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+/* ——— Footer ——— */
+.kamel-home-footer {
+  position: relative;
+  padding: 64px 24px 36px;
+  margin-top: 0;
+}
+
+.kamel-home-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.22) 20%,
+    rgba(255, 255, 255, 0.22) 80%,
+    transparent
+  );
+}
+
+.kamel-home-footer a {
+  color: inherit;
+  opacity: 0.72;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.kamel-home-footer a:hover {
+  opacity: 1;
+  border-bottom-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ——— Theme tokens ——— */
+.kamel-home[data-theme='dark'] {
+  --kamel-hero-glow-1: rgba(64, 150, 255, 0.22);
+  --kamel-hero-glow-2: rgba(167, 139, 250, 0.14);
+  --kamel-hero-glow-3: rgba(52, 211, 153, 0.06);
+  --kamel-orb-a: rgba(64, 150, 255, 0.28);
+  --kamel-orb-b: rgba(167, 139, 250, 0.18);
+  --kamel-pill-border: rgba(255, 255, 255, 0.1);
+  --kamel-pill-bg: rgba(255, 255, 255, 0.05);
+  --kamel-card-bg: #141414;
+  --kamel-glass-bg: rgba(20, 24, 32, 0.75);
+  --kamel-glass-border: rgba(255, 255, 255, 0.08);
+  --kamel-about-border: rgba(255, 255, 255, 0.08);
+  --kamel-about-bg-1: rgba(22, 119, 255, 0.12);
+  --kamel-about-bg-2: rgba(88, 28, 135, 0.15);
+  --kamel-vision-border: rgba(255, 255, 255, 0.08);
+}
+
+.kamel-home[data-theme='light'] {
+  --kamel-hero-glow-1: rgba(22, 119, 255, 0.16);
+  --kamel-hero-glow-2: rgba(114, 46, 209, 0.12);
+  --kamel-hero-glow-3: rgba(22, 163, 74, 0.06);
+  --kamel-orb-a: rgba(22, 119, 255, 0.2);
+  --kamel-orb-b: rgba(124, 58, 237, 0.14);
+  --kamel-pill-border: rgba(0, 0, 0, 0.07);
+  --kamel-pill-bg: rgba(255, 255, 255, 0.82);
+  --kamel-card-bg: #fff;
+  --kamel-glass-bg: rgba(255, 255, 255, 0.82);
+  --kamel-glass-border: rgba(255, 255, 255, 0.9);
+  --kamel-about-border: rgba(0, 0, 0, 0.06);
+  --kamel-about-bg-1: #eef6ff;
+  --kamel-about-bg-2: #f5f0ff;
+  --kamel-vision-border: rgba(0, 0, 0, 0.06);
+}
+
+/* Fallback when color-mix unsupported (older Safari): gradients still work via rgba in JSX where needed */
