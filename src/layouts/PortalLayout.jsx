@@ -177,16 +177,54 @@ export function PortalLayout() {
           },
         ]
       : []),
-    ...(hasAccess?.('reception.dashboard')
+    ...(hasAccess?.('reception.dashboard') ||
+    hasAccess?.('reception.serviceCenters') ||
+    hasAccess?.('reception.nationalities')
       ? [
           {
-            key: ROUTES.PORTAL_RECEPTION_DASHBOARD,
+            key: 'reception-submenu',
             icon: <InboxOutlined />,
-            label: t('portal.receptionDashboardTitle'),
-            onClick: () => {
-              navigate(ROUTES.PORTAL_RECEPTION_DASHBOARD);
-              setDrawerOpen(false);
-            },
+            label: t('portal.receptionMenuTitle'),
+            children: [
+              ...(hasAccess?.('reception.dashboard')
+                ? [
+                    {
+                      key: ROUTES.PORTAL_RECEPTION_DASHBOARD,
+                      label: t('portal.receptionDashboardTitle'),
+                      onClick: () => {
+                        navigate(ROUTES.PORTAL_RECEPTION_DASHBOARD);
+                        setDrawerOpen(false);
+                      },
+                    },
+                  ]
+                : []),
+              ...(hasAccess?.('reception.dashboard') || hasAccess?.('reception.serviceCenters')
+                ? [
+                    {
+                      key: ROUTES.PORTAL_RECEPTION_SERVICE_CENTERS,
+                      label: t('portal.receptionServiceCentersTitle'),
+                      onClick: () => {
+                        navigate(ROUTES.PORTAL_RECEPTION_SERVICE_CENTERS);
+                        setDrawerOpen(false);
+                      },
+                    },
+                  ]
+                : []),
+              ...(hasAccess?.('reception.dashboard') ||
+              hasAccess?.('reception.serviceCenters') ||
+              hasAccess?.('reception.nationalities')
+                ? [
+                    {
+                      key: ROUTES.PORTAL_RECEPTION_NATIONALITIES,
+                      label: t('portal.receptionNatMenu'),
+                      onClick: () => {
+                        navigate(ROUTES.PORTAL_RECEPTION_NATIONALITIES);
+                        setDrawerOpen(false);
+                      },
+                    },
+                  ]
+                : []),
+            ],
           },
         ]
       : []),

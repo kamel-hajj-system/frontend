@@ -1,20 +1,42 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, Alert, Result, Typography } from 'antd';
+import { Form, Input, Button, Card, Alert, Result, Typography, Select, Spin } from 'antd';
 import { TeamOutlined } from '@ant-design/icons';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { registerServiceCenter } from '../../api/users';
+import { getPublicServiceCenters } from '../../api/serviceCenters';
 import { ROUTES } from '../../utils/constants';
 
 const { Title, Text } = Typography;
 
 export function SignUpServiceCenterPage() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const isAr = lang === 'ar';
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [centers, setCenters] = useState([]);
+  const [loadingCenters, setLoadingCenters] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingCenters(true);
+    getPublicServiceCenters()
+      .then((rows) => {
+        if (!cancelled) setCenters(Array.isArray(rows) ? rows : []);
+      })
+      .catch(() => {
+        if (!cancelled) setCenters([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingCenters(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const onFinish = async (values) => {
     setError('');
@@ -26,7 +48,7 @@ export function SignUpServiceCenterPage() {
         email: values.email?.trim(),
         phone: values.phone?.trim() || undefined,
         password: values.password,
-        serviceCenterId: values.serviceCenterId?.trim() || undefined,
+        serviceCenterId: values.serviceCenterId,
       });
       setSuccess(true);
       setTimeout(() => navigate(ROUTES.LOGIN), 2000);
@@ -59,6 +81,9 @@ export function SignUpServiceCenterPage() {
           <TeamOutlined /> {t('nav.signUpServiceCenter')}
         </Title>
         {error && <Alert type="error" message={error} showIcon style={{ marginBottom: 16 }} />}
+        {!loadingCenters && centers.length === 0 && (
+          <Alert type="warning" message={t('signUp.noCentersYet')} showIcon style={{ marginBottom: 16 }} />
+        )}
         <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
           <Form.Item name="fullName" label={t('signUp.fullName')} rules={[{ required: true }]}>
             <Input />
@@ -75,8 +100,30 @@ export function SignUpServiceCenterPage() {
           <Form.Item name="password" label={t('signUp.password')} rules={[{ required: true, min: 6, message: t('signUp.password') }]}>
             <Input.Password />
           </Form.Item>
-          <Form.Item name="serviceCenterId" label={t('signUp.serviceCenterId')}>
-            <Input />
+          <Form.Item
+            name="serviceCenterId"
+            label={t('signUp.selectServiceCenter')}
+            rules={[{ required: true, message: t('signUp.serviceCenterRequired') }]}
+            extra={t('signUp.serviceCenterSelectHint')}
+          >
+            {loadingCenters ? (
+              <Spin />
+            ) : (
+              <Select
+                placeholder={t('signUp.selectServiceCenter')}
+                allowClear={false}
+                showSearch
+                optionFilterProp="label"
+                options={centers.map((c) => {
+                  const labelName = isAr ? c.nameAr || c.name : c.name;
+                  return {
+                    value: c.id,
+                    label: labelName ? `[${c.code}] ${labelName}` : `[${c.code}]`,
+                  };
+                })}
+                notFoundContent={isAr ? 'لا توجد مراكز مسجلة بعد' : 'No centers available yet'}
+              />
+            )}
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" block loading={loading} icon={<TeamOutlined />}>

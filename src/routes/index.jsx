@@ -26,11 +26,14 @@ import { HrAttendancePage } from '../pages/portal/company/hr/HrAttendancePage';
 import { HrSendNotificationsPage } from '../pages/portal/company/hr/HrSendNotificationsPage';
 import { SupervisorSendNotificationsPage } from '../pages/portal/company/SupervisorSendNotificationsPage';
 import { ReceptionDashboardPage } from '../pages/portal/company/reception/ReceptionDashboardPage';
+import { ReceptionServiceCentersPage } from '../pages/portal/company/reception/ReceptionServiceCentersPage';
+import { ReceptionNationalitiesPage } from '../pages/portal/company/reception/ReceptionNationalitiesPage';
 import { SuperAdminDashboardPage } from '../pages/superadmin/SuperAdminDashboardPage';
 import { AccessControlPage } from '../pages/superadmin/AccessControlPage';
 import { AssignSupervisorPage } from '../pages/superadmin/AssignSupervisorPage';
 import { SupervisorsManagementPage } from '../pages/superadmin/SupervisorsManagementPage';
 import { LocationsPage } from '../pages/superadmin/LocationsPage';
+import { ServiceCentersPage } from '../pages/superadmin/ServiceCentersPage';
 import { ShiftsPage } from '../pages/superadmin/ShiftsPage';
 import { SendNotificationsPage } from '../pages/superadmin/SendNotificationsPage';
 import { ForbiddenPage } from '../pages/ForbiddenPage';
@@ -172,6 +175,14 @@ const router = createBrowserRouter([
         path: 'reception/dashboard',
         element: <ReceptionDashboardPage />,
       },
+      {
+        path: 'reception/service-centers',
+        element: <ReceptionServiceCentersPage />,
+      },
+      {
+        path: 'reception/nationalities',
+        element: <ReceptionNationalitiesPage />,
+      },
     ],
   },
   {
@@ -188,6 +199,7 @@ const router = createBrowserRouter([
       { path: 'assign-supervisor', element: <AssignSupervisorPage /> },
       { path: 'supervisors', element: <SupervisorsManagementPage /> },
       { path: 'locations', element: <LocationsPage /> },
+      { path: 'service-centers', element: <ServiceCentersPage /> },
       { path: 'shifts', element: <ShiftsPage /> },
       { path: 'notification-inbox', element: <NotificationsPage /> },
       { path: 'notifications', element: <SendNotificationsPage /> },

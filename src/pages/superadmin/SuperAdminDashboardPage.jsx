@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Table, Button, Card, Modal, Form, Input, Select, Switch,
-  Space, Tag, message, Popconfirm,
+  Space, Tag, message, Popconfirm, Typography,
 } from 'antd';
 import {
   UserAddOutlined, DeleteOutlined, EditOutlined,
@@ -10,6 +10,7 @@ import {
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getUsers, createUser, deleteUser, updateUser } from '../../api/users';
 import { getLocations } from '../../api/locations';
+import { getServiceCenters } from '../../api/serviceCenters';
 import { getShifts } from '../../api/shifts';
 import { ROLES, USER_TYPES } from '../../utils/constants';
 import { ResponsiveTable } from '../../components/common/ResponsiveTable';
@@ -22,6 +23,7 @@ export function SuperAdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [locations, setLocations] = useState([]);
   const [shifts, setShifts] = useState([]);
+  const [serviceCenters, setServiceCenters] = useState([]);
 
   const [createVisible, setCreateVisible] = useState(false);
   const [createForm] = Form.useForm();
@@ -34,6 +36,7 @@ export function SuperAdminDashboardPage() {
   useEffect(() => {
     getLocations().then(setLocations).catch(() => setLocations([]));
     getShifts().then(setShifts).catch(() => setShifts([]));
+    getServiceCenters().then(setServiceCenters).catch(() => setServiceCenters([]));
   }, []);
 
   const fetchUsers = useCallback(() => {
@@ -62,6 +65,7 @@ export function SuperAdminDashboardPage() {
         shiftId: values.shiftId || undefined,
         locationId: values.locationId || undefined,
         supervisorId: values.supervisorId?.trim() || undefined,
+        serviceCenterId: values.serviceCenterId || undefined,
         isActive: values.isActive !== false,
         isHr: values.isHr === true,
       });
@@ -100,6 +104,7 @@ export function SuperAdminDashboardPage() {
       locationId: record.locationId || undefined,
       shiftId: record.shiftId || undefined,
       supervisorId: record.supervisorId || '',
+      serviceCenterId: record.serviceCenterId || undefined,
       isActive: record.isActive ?? true,
       isHr: record.isHr ?? false,
     });
@@ -120,6 +125,7 @@ export function SuperAdminDashboardPage() {
         locationId: values.locationId || null,
         shiftId: values.shiftId || null,
         supervisorId: values.supervisorId?.trim() || null,
+        serviceCenterId: values.serviceCenterId || null,
         isActive: values.isActive,
         isHr: values.isHr,
       });
@@ -173,6 +179,15 @@ export function SuperAdminDashboardPage() {
       render: (_, r) => {
         if (!r.shift) return '—';
         return isAr ? (r.shift.shiftAr || r.shift.name) : r.shift.name;
+      },
+    },
+    {
+      title: t('superadmin.scCenterCode'),
+      key: 'sc',
+      render: (_, r) => {
+        const c = serviceCenters.find((x) => x.id === r.serviceCenterId);
+        if (c) return <Tag color="blue">{c.code}</Tag>;
+        return r.serviceCenterId ? <Typography.Text copyable={{ text: r.serviceCenterId }} type="secondary">{`${r.serviceCenterId.slice(0, 8)}…`}</Typography.Text> : '—';
       },
     },
     {
@@ -262,6 +277,21 @@ export function SuperAdminDashboardPage() {
       </Form.Item>
       <Form.Item name="supervisorId" label={isAr ? 'معرف المشرف' : 'Supervisor ID'}>
         <Input placeholder="UUID" />
+      </Form.Item>
+      <Form.Item name="serviceCenterId" label={t('signUp.serviceCenterId')}>
+        <Select
+          allowClear
+          placeholder={isAr ? 'اختر مركز الخدمة' : 'Select service center'}
+          showSearch
+          optionFilterProp="label"
+          options={serviceCenters.map((c) => {
+            const labelName = isAr ? c.nameAr || c.name : c.name;
+            return {
+              value: c.id,
+              label: labelName ? `[${c.code}] ${labelName}` : `[${c.code}]`,
+            };
+          })}
+        />
       </Form.Item>
       <Form.Item name="isHr" label="HR" valuePropName="checked" initialValue={false}>
         <Switch />

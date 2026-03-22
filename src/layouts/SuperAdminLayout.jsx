@@ -6,6 +6,7 @@ import {
   SafetyOutlined,
   TeamOutlined,
   EnvironmentOutlined,
+  ShopOutlined,
   ClockCircleOutlined,
   LogoutOutlined,
   GlobalOutlined,
@@ -90,6 +91,12 @@ export function SuperAdminLayout() {
       icon: <EnvironmentOutlined />,
       label: isAr ? 'المواقع' : 'Locations',
       onClick: () => { navigate(ROUTES.SUPER_ADMIN_LOCATIONS); setDrawerOpen(false); },
+    },
+    {
+      key: ROUTES.SUPER_ADMIN_SERVICE_CENTERS,
+      icon: <ShopOutlined />,
+      label: isAr ? 'مراكز الخدمة' : 'Service Centers',
+      onClick: () => { navigate(ROUTES.SUPER_ADMIN_SERVICE_CENTERS); setDrawerOpen(false); },
     },
     {
       key: ROUTES.SUPER_ADMIN_SHIFTS,

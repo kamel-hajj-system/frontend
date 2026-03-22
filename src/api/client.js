@@ -54,6 +54,7 @@ export async function apiRequest(path, options = {}) {
     const err = new Error(message);
     err.status = res.status;
     err.details = rawDetails;
+    if (data?.code) err.apiCode = data.code;
     throw err;
   }
   return data;

@@ -3,13 +3,18 @@ import react from '@vitejs/plugin-react-swc';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  /** Pre-bundle chart deps so the dev server doesn’t serve stale optimize hashes after installs. */
+  optimizeDeps: {
+    include: ['chart.js', 'react-chartjs-2'],
+  },
   plugins: [
     react(),
     VitePWA({
       registerType: 'prompt',
       injectRegister: null,
+      // Off in dev: avoids "new version" prompt on every refresh/HMR. Test PWA with `npm run build && npm run preview`.
       devOptions: {
-        enabled: true,
+        enabled: false,
         type: 'module',
       },
       strategies: 'injectManifest',

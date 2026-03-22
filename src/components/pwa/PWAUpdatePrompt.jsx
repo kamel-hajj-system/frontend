@@ -11,6 +11,7 @@ export function PWAUpdatePrompt() {
   const { t } = useLanguage();
   const { needRefresh: [needRefresh, setNeedRefresh], updateServiceWorker } = useRegisterSW({
     onRegistered(r) {
+      if (import.meta.env.DEV) return;
       if (r) r.update();
     },
   });
@@ -20,7 +21,8 @@ export function PWAUpdatePrompt() {
     setNeedRefresh(false);
   };
 
-  if (!needRefresh) return null;
+  // No modal on localhost — keep prompt only for real production deploys.
+  if (import.meta.env.DEV || !needRefresh) return null;
 
   return (
     <Modal
