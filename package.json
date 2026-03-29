@@ -12,6 +12,10 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.9",
+    "@mui/material": "^7.3.9",
     "antd": "^5.22.0",
     "autoprefixer": "^10.4.27",
     "chart.js": "^4.5.1",

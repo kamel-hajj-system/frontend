@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card, Typography, Alert, Button, Space, Tag, Divider, message, Descriptions } from 'antd';
-import { CalendarOutlined, ReloadOutlined, LoginOutlined, LogoutOutlined } from '@ant-design/icons';
+import { LoadingOutlined, ReloadOutlined } from '@ant-design/icons';
+import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import { useAuth } from '../../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../../contexts/LanguageContext';
 import { USER_TYPES } from '../../../../../utils/constants';
@@ -34,11 +35,8 @@ export function AttendanceAndDeparturePage() {
   const [geoError, setGeoError] = useState(null);
   const [geoLoading, setGeoLoading] = useState(false);
 
-  if (user?.userType !== USER_TYPES.COMPANY) {
-    return <Alert type="error" message={t('forbidden.message')} showIcon />;
-  }
-
   const refresh = useCallback(async () => {
+    if (user?.userType !== USER_TYPES.COMPANY) return;
     setLoading(true);
     try {
       const res = await getAttendanceStatus(
@@ -52,11 +50,12 @@ export function AttendanceAndDeparturePage() {
     } finally {
       setLoading(false);
     }
-  }, [isAr, geo]);
+  }, [isAr, geo, user?.userType]);
 
   useEffect(() => {
+    if (user?.userType !== USER_TYPES.COMPANY) return;
     refresh();
-  }, [refresh]);
+  }, [refresh, user?.userType]);
 
   const requestGeo = useCallback(() => {
     setGeoError(null);
@@ -101,6 +100,7 @@ export function AttendanceAndDeparturePage() {
   }, [isAr]);
 
   useEffect(() => {
+    if (user?.userType !== USER_TYPES.COMPANY) return;
     // Only auto-fetch if user already granted permission
     if (!navigator?.permissions?.query) return;
     navigator.permissions
@@ -109,12 +109,13 @@ export function AttendanceAndDeparturePage() {
         if (p.state === 'granted') requestGeo();
       })
       .catch(() => {});
-  }, [requestGeo]);
+  }, [requestGeo, user?.userType]);
 
   // Refresh after we successfully get location
   useEffect(() => {
+    if (user?.userType !== USER_TYPES.COMPANY) return;
     if (geo) refresh();
-  }, [geo, refresh]);
+  }, [geo, refresh, user?.userType]);
 
   const zoneConfigured = Boolean(status?.location?.zone);
   const insideZone = status?.geo?.isInsideZone;
@@ -163,10 +164,46 @@ export function AttendanceAndDeparturePage() {
     }
   };
 
+  const fingerprintAction = useMemo(() => {
+    if (canCheckIn) return 'checkIn';
+    if (canCheckOut) return 'checkOut';
+    return 'none';
+  }, [canCheckIn, canCheckOut]);
+
+  const handleFingerprintClick = () => {
+    if (fingerprintAction === 'checkIn') doCheckIn();
+    else if (fingerprintAction === 'checkOut') doCheckOut();
+  };
+
+  const fingerprintColor =
+    fingerprintAction === 'checkIn'
+      ? '#52c41a'
+      : fingerprintAction === 'checkOut'
+        ? '#ff4d4f'
+        : '#bfbfbf';
+
+  const fingerprintTitle =
+    fingerprintAction === 'checkIn'
+      ? isAr
+        ? 'تسجيل حضور'
+        : 'Check in'
+      : fingerprintAction === 'checkOut'
+        ? isAr
+          ? 'تسجيل انصراف'
+          : 'Check out'
+        : isAr
+          ? 'غير متاح حالياً'
+          : 'Not available';
+
+  if (user?.userType !== USER_TYPES.COMPANY) {
+    return <Alert type="error" message={t('forbidden.message')} showIcon />;
+  }
+
   return (
     <div>
-      <Title level={4} style={{ marginBottom: 16 }}>
-        <CalendarOutlined /> {t('portal.attendanceDepartureTitle')}
+      <Title level={4} style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <FingerprintIcon sx={{ fontSize: 22, color: 'inherit' }} />
+        {t('portal.attendanceDepartureTitle')}
       </Title>
       <Card
         extra={
@@ -269,26 +306,47 @@ export function AttendanceAndDeparturePage() {
 
             <Divider style={{ margin: '12px 0' }} />
 
-            <Space wrap>
-              <Button
-                type="primary"
-                icon={<LoginOutlined />}
-                onClick={doCheckIn}
-                disabled={!canCheckIn}
-                loading={acting}
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0 4px' }}>
+              <button
+                type="button"
+                title={fingerprintTitle}
+                aria-label={fingerprintTitle}
+                onClick={handleFingerprintClick}
+                disabled={fingerprintAction === 'none' || acting}
+                style={{
+                  border: 'none',
+                  background: 'transparent',
+                  padding: 16,
+                  margin: 0,
+                  cursor: fingerprintAction === 'none' || acting ? 'not-allowed' : 'pointer',
+                  lineHeight: 0,
+                  borderRadius: '50%',
+                  transition: 'transform 0.15s ease',
+                }}
+                onMouseDown={(e) => {
+                  if (fingerprintAction !== 'none' && !acting) e.currentTarget.style.transform = 'scale(0.96)';
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
               >
-                {isAr ? 'تسجيل حضور' : 'Check in'}
-              </Button>
-              <Button
-                danger
-                icon={<LogoutOutlined />}
-                onClick={doCheckOut}
-                disabled={!canCheckOut}
-                loading={acting}
-              >
-                {isAr ? 'تسجيل انصراف' : 'Check out'}
-              </Button>
-            </Space>
+                {acting ? (
+                  <LoadingOutlined style={{ fontSize: 112, color: fingerprintColor }} spin />
+                ) : (
+                  <FingerprintIcon
+                    sx={{
+                      fontSize: 112,
+                      color: fingerprintColor,
+                      display: 'block',
+                      transition: 'color 0.2s ease',
+                    }}
+                  />
+                )}
+              </button>
+            </div>
 
             <Divider style={{ margin: '12px 0' }} />
 
