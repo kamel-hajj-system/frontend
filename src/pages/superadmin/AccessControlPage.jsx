@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Card, Space, Select, Button, Tree, message, Tag } from 'antd';
+import { Card, Space, Select, Button, Tree, Typography, message, Tag } from 'antd';
 import { SafetyOutlined, ReloadOutlined, SaveOutlined } from '@ant-design/icons';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { ResponsiveTable } from '../../components/common/ResponsiveTable';
@@ -10,14 +10,30 @@ import { ACCESS_TREE, USER_TYPES, ROUTES, ROLES } from '../../utils/constants';
 import { useNavigate } from 'react-router-dom';
 
 const { Option } = Select;
+const { Text } = Typography;
 
+/** Renders tree nodes; leaf nodes may show `path` (route) under the label from `ACCESS_TREE` in `constants.js`. */
 function buildTreeData(lang) {
   const isAr = lang === 'ar';
-  const mapNode = (n) => ({
-    key: n.key,
-    title: isAr ? n.titleAr : n.titleEn,
-    children: n.children ? n.children.map(mapNode) : undefined,
-  });
+  const mapNode = (n) => {
+    const label = isAr ? n.titleAr : n.titleEn;
+    const title =
+      n.path != null ? (
+        <span>
+          <div>{label}</div>
+          <Text type="secondary" style={{ fontSize: 11, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>
+            {n.path}
+          </Text>
+        </span>
+      ) : (
+        label
+      );
+    return {
+      key: n.key,
+      title,
+      children: n.children ? n.children.map(mapNode) : undefined,
+    };
+  };
   return ACCESS_TREE.map(mapNode);
 }
 
@@ -194,7 +210,13 @@ export function AccessControlPage() {
 
       <Card
         title={isAr ? 'الوصول (اختر الموديلات/الصفحات)' : 'Access (select modules/pages)'}
-        extra={<span style={{ opacity: 0.7 }}>{isAr ? 'يتم الحفظ كمشاهدة، والأفعال تعتمد على الدور' : 'Saved as visibility; actions depend on role'}</span>}
+        extra={
+          <span style={{ opacity: 0.7, maxWidth: 420, textAlign: isAr ? 'left' : 'right' }}>
+            {isAr
+              ? 'يتم الحفظ كمشاهدة، والأفعال تعتمد على الدور. لإضافة صفحة جديدة: عدّل ACCESS_TREE في utils/constants.js.'
+              : 'Saved as visibility; actions depend on role. To register a new page: add it to ACCESS_TREE in utils/constants.js.'}
+          </span>
+        }
       >
         <Tree
           checkable

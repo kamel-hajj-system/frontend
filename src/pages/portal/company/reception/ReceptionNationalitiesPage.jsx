@@ -24,10 +24,7 @@ export function ReceptionNationalitiesPage() {
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar';
 
-  const canView =
-    hasAccess('reception.dashboard') ||
-    hasAccess('reception.serviceCenters') ||
-    hasAccess('reception.nationalities');
+  const canView = hasAccess('reception.nationalities');
 
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);

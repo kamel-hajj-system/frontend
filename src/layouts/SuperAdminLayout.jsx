@@ -20,6 +20,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { ROUTES } from '../utils/constants';
+import { KamelLogo } from '../components/common/KamelLogo';
 import { NotificationBellDropdown } from '../components/common/NotificationBellDropdown';
 
 const { Header, Sider, Content } = Layout;
@@ -119,7 +120,8 @@ export function SuperAdminLayout() {
 
   const sidebar = (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: siderBg }}>
-      <div style={{ height: 32, margin: 16, display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+      <div style={{ minHeight: 36, margin: 16, display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, flexWrap: 'wrap' }}>
+        <KamelLogo height={26} alt="" />
         <Text strong style={{ color: isDarkSider ? 'rgba(255,255,255,0.85)' : 'var(--color-text)' }}>
           <CrownOutlined /> {isAr ? 'المشرف العام' : 'Super Admin'}
         </Text>
@@ -131,11 +133,13 @@ export function SuperAdminLayout() {
         items={sidebarMenuItems}
         style={{ borderRight: 0, flex: 1, background: 'transparent' }}
       />
+      {/* Sidebar bottom user name (hidden for now)
       <div style={{ padding: 12, borderTop: `1px solid ${siderBorder}`, flexShrink: 0 }}>
         <Text type="secondary" style={{ color: siderTextColor, display: 'block', fontSize: 12 }} ellipsis title={displayName}>
           {displayName}
         </Text>
       </div>
+      */}
     </div>
   );
 

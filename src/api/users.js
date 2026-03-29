@@ -27,8 +27,15 @@ export async function registerEmployee(payload) {
   });
 }
 
+/** Public: active supervisors for a work location (employee sign-up). */
+export async function getSignupSupervisors(locationId) {
+  const q = toQueryString({ locationId });
+  const path = '/users/register/supervisors' + (q ? `?${q}` : '');
+  return apiRequest(path);
+}
+
 /**
- * Register as service center user (public). Role=Supervisor, userType=ServiceCenter.
+ * Register as service center user (public). Role EmpRead until HR approves; userType=ServiceCenter.
  * Payload: fullName, fullNameAr?, email, password, phone?, serviceCenterId?
  */
 export async function registerServiceCenter(payload) {
@@ -50,6 +57,31 @@ export async function getHrUsers(params = {}) {
   return apiRequest(`/hr/users${q ? `?${q}` : ''}`);
 }
 
+/** HR: list users awaiting approval (scoped by company vs service center on the server). */
+export async function getHrPendingRegistrations() {
+  return apiRequest('/hr/pending-registrations');
+}
+
+/** HR (Supervisor/EmpManage): approve pending user and assign role. */
+export async function approveHrPendingUser(id, role) {
+  return apiRequest(`/hr/users/${id}/approve`, {
+    method: 'POST',
+    body: JSON.stringify({ role }),
+  });
+}
+
+/** Company supervisor: pending employees linked to this supervisor (supervisorId). */
+export async function getSupervisorPendingRegistrations() {
+  return apiRequest('/portal/company/supervisor/pending-registrations');
+}
+
+export async function approveSupervisorPendingUser(id, role) {
+  return apiRequest(`/portal/company/supervisor/users/${id}/approve`, {
+    method: 'POST',
+    body: JSON.stringify({ role }),
+  });
+}
+
 export async function getHrSupervisorsTree(params = {}) {
   const q = toQueryString(params);
   return apiRequest(`/hr/supervisors-tree${q ? `?${q}` : ''}`);
@@ -63,6 +95,14 @@ export async function getSuperAdminSupervisorsTree(params = {}) {
 export async function getMyEmployees(params = {}) {
   const q = toQueryString(params);
   return apiRequest(`/portal/company/my-employees${q ? `?${q}` : ''}`);
+}
+
+/** Company supervisor: update role for a direct report only. */
+export async function updateMyEmployeeRole(id, role) {
+  return apiRequest('/portal/company/my-employees/' + id, {
+    method: 'PATCH',
+    body: JSON.stringify({ role }),
+  });
 }
 
 /** Get current user with permissions (for auth state). No permission required. */

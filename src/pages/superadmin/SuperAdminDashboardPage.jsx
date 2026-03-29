@@ -231,7 +231,7 @@ export function SuperAdminDashboardPage() {
 
   const userForm = (form, isEdit = false) => (
     <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-      <Form.Item name="fullName" label={isAr ? 'الاسم الكامل' : 'Full Name'} rules={[{ required: true }]}>
+      <Form.Item name="fullName" label={isAr ? 'الاسم بالإنجليزية' : 'Name In English'} rules={[{ required: true }]}>
         <Input />
       </Form.Item>
       <Form.Item name="fullNameAr" label={isAr ? 'الاسم بالعربي' : 'Full Name (Arabic)'}>

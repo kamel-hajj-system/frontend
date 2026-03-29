@@ -59,11 +59,11 @@ export function AuthProvider({ children }) {
       const u = await getMe();
       setUser(u);
       return u;
-    } catch {
-      // Do not trust login response for auth state. If /users/me fails, treat login as failed.
+    } catch (err) {
       setAuthToken(null);
       setUser(null);
-      throw new Error('Login failed. Please try again.');
+      const msg = err?.message || 'Login failed. Please try again.';
+      throw new Error(msg);
     }
   }, []);
 

@@ -23,6 +23,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { ROUTES, USER_TYPES } from '../../utils/constants';
 import { getAuthenticatedLandingRoute } from '../../utils/authRedirect';
 import { NotificationBellDropdown } from '../common/NotificationBellDropdown';
+import { KamelLogo } from '../common/KamelLogo';
 import { usePublicContentScrollRoot } from '../../contexts/PublicContentScrollContext';
 import { usePublicHomeScrollSpy } from '../../hooks/usePublicHomeScrollSpy';
 
@@ -65,6 +66,11 @@ export function PublicNavbar() {
   const landingPath = isAuthenticated && user ? getAuthenticatedLandingRoute(user) : ROUTES.HOME;
 
   const isHome = location.pathname === ROUTES.HOME;
+  /** Larger wordmark on marketing home; dark mode uses public dark artwork. */
+  const navLogoVariant = isHome ? (theme === 'dark' ? 'darkPublic' : 'lightPublic') : 'auto';
+  const navLogoHeightDesktop = isHome ? 52 : 34;
+  const navLogoHeightMobile = isHome ? 44 : 30;
+  const navLogoDrawerHeight = isHome ? 34 : 24;
   const contentScrollRoot = usePublicContentScrollRoot();
   const homeScrollSpyId = usePublicHomeScrollSpy(
     !isAuthenticated && isHome,
@@ -383,7 +389,7 @@ export function PublicNavbar() {
           style={{
             maxWidth: 1200,
             margin: '0 auto',
-            padding: '10px 20px',
+            padding: isHome ? '12px 20px' : '10px 20px',
             display: 'flex',
             alignItems: 'center',
             gap: 16,
@@ -396,15 +402,27 @@ export function PublicNavbar() {
                   type="text"
                   onClick={goBrandOrAppHome}
                   style={{
-                    fontSize: 18,
-                    fontWeight: 700,
-                    letterSpacing: '-0.02em',
-                    color: token.colorText,
-                    height: 44,
-                    paddingInline: 10,
+                    height: isHome ? 56 : 44,
+                    paddingInline: isHome ? 4 : 6,
+                    display: 'inline-flex',
+                    alignItems: 'center',
                   }}
+                  aria-label={t('app.shortName')}
                 >
-                  {t('app.shortName')}
+                  <KamelLogo
+                    variant={navLogoVariant}
+                    height={navLogoHeightDesktop}
+                    alt=""
+                    style={
+                      isHome
+                        ? {
+                            height: 'clamp(44px, 5.5vw, 60px)',
+                            width: 'auto',
+                            maxWidth: 'min(360px, 42vw)',
+                          }
+                        : undefined
+                    }
+                  />
                 </Button>
               </div>
               <div
@@ -423,8 +441,26 @@ export function PublicNavbar() {
             </>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between', gap: 16 }}>
-              <Button type="link" onClick={goBrandOrAppHome} style={{ fontSize: 18, fontWeight: 600, color: 'inherit', padding: 0 }}>
-                {t('app.shortName')}
+              <Button
+                type="link"
+                onClick={goBrandOrAppHome}
+                style={{ height: isHome ? 48 : 40, padding: 0, display: 'inline-flex', alignItems: 'center' }}
+                aria-label={t('app.shortName')}
+              >
+                <KamelLogo
+                  variant={navLogoVariant}
+                  height={navLogoHeightMobile}
+                  alt=""
+                  style={
+                    isHome
+                      ? {
+                          height: 'clamp(38px, 11vw, 52px)',
+                          width: 'auto',
+                          maxWidth: 'min(300px, 62vw)',
+                        }
+                      : undefined
+                  }
+                />
               </Button>
               <Button type="text" icon={<MenuOutlined />} onClick={() => setDrawerOpen(true)} style={{ fontSize: 18 }} aria-label="Menu" />
             </div>
@@ -433,7 +469,12 @@ export function PublicNavbar() {
       </div>
 
       <Drawer
-        title={t('app.shortName')}
+        title={
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+            <KamelLogo variant={navLogoVariant} height={navLogoDrawerHeight} alt="" />
+            <span style={{ fontWeight: 600 }}>{t('app.shortName')}</span>
+          </span>
+        }
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         placement={lang === 'ar' ? 'left' : 'right'}

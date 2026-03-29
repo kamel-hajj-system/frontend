@@ -18,6 +18,7 @@ import {
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { ROUTES } from '../../utils/constants';
+import { KamelLogo } from '../../components/common/KamelLogo';
 import '../../styles/homePage.css';
 
 const { Title, Paragraph, Text } = Typography;
@@ -29,6 +30,8 @@ export function HomePage() {
   const location = useLocation();
   const { t, lang } = useLanguage();
   const { theme } = useTheme();
+  /** Public home uses dedicated light/dark marketing artwork (not portal LightMode/DarkMood). */
+  const homeLogoVariant = theme === 'dark' ? 'darkPublic' : 'lightPublic';
   const isAr = lang === 'ar';
   const year = new Date().getFullYear();
 
@@ -79,6 +82,18 @@ export function HomePage() {
             <div className="kamel-home-pill" style={{ color: token.colorPrimary }}>
               <RocketOutlined />
               {t('home.heroBadge')}
+            </div>
+            <div className="kamel-home-hero__brand" style={{ marginBottom: 22 }}>
+              <KamelLogo
+                variant={homeLogoVariant}
+                height={96}
+                alt={t('app.shortName')}
+                style={{
+                  height: 'clamp(56px, 14vw, 96px)',
+                  width: 'auto',
+                  maxWidth: 'min(440px, 100%)',
+                }}
+              />
             </div>
             <Title
               level={1}
@@ -288,8 +303,17 @@ export function HomePage() {
                 <div className="kamel-home-about-panel__bg" aria-hidden />
                 <div className="kamel-home-about-panel__grid" aria-hidden />
                 <div className="kamel-home-about-panel__content">
-                  <div className="kamel-home-about-panel__logo-ring" aria-hidden>
-                    {t('app.shortName').charAt(0)}
+                  <div className="kamel-home-about-panel__logo-ring">
+                    <KamelLogo
+                      variant={homeLogoVariant}
+                      fullWidth
+                      alt={t('app.shortName')}
+                      style={{
+                        maxHeight: 'clamp(80px, 16vw, 120px)',
+                        width: '100%',
+                        height: 'auto',
+                      }}
+                    />
                   </div>
                   <Text style={{ fontSize: 15, ...muted, lineHeight: 1.65 }}>
                     {t('app.name')} — {t('home.footerTagline')}
@@ -387,9 +411,20 @@ export function HomePage() {
         <div className="kamel-home-container">
           <Row gutter={[32, 32]}>
             <Col xs={24} md={8}>
-              <Title level={4} style={{ color: '#fff', marginTop: 0, letterSpacing: '-0.03em', fontWeight: 800 }}>
-                {t('app.shortName')}
-              </Title>
+              <div style={{ marginBottom: 16 }}>
+                <span className="kamel-home-footer__brand-pill">
+                  <KamelLogo
+                    variant={homeLogoVariant}
+                    height={64}
+                    alt={t('app.shortName')}
+                    style={{
+                      height: 'clamp(48px, 11vw, 72px)',
+                      width: 'auto',
+                      maxWidth: 'min(360px, 100%)',
+                    }}
+                  />
+                </span>
+              </div>
               <Paragraph style={{ color: 'rgba(255,255,255,0.65)', marginBottom: 0, lineHeight: 1.65 }}>{t('home.footerTagline')}</Paragraph>
             </Col>
             <Col xs={24} sm={8} md={5}>

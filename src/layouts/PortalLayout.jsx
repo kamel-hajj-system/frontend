@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, Button, Dropdown, Drawer, Typography, Grid, Space, Tooltip, theme as antTheme } from 'antd';
+import { Layout, Menu, Button, Dropdown, Drawer, Grid, Space, Tooltip, theme as antTheme } from 'antd';
 import {
-  BellOutlined,
   DashboardOutlined,
   InboxOutlined,
   LogoutOutlined,
@@ -19,10 +18,10 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { ROUTES, USER_TYPES } from '../utils/constants';
 import { NotificationBellDropdown } from '../components/common/NotificationBellDropdown';
+import { KamelLogo } from '../components/common/KamelLogo';
 
 const { Header, Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
-const { Text } = Typography;
 
 export function PortalLayout() {
   const { token } = antTheme.useToken();
@@ -68,6 +67,11 @@ export function PortalLayout() {
     user?.userType === USER_TYPES.SERVICE_CENTER
       ? ROUTES.PORTAL_SERVICE_CENTER_DASHBOARD
       : ROUTES.PORTAL_COMPANY_DASHBOARD;
+
+  const hrPendingRoute =
+    user?.userType === USER_TYPES.SERVICE_CENTER
+      ? ROUTES.PORTAL_SERVICE_CENTER_HR_PENDING
+      : ROUTES.PORTAL_COMPANY_HR_PENDING;
   const dashboardLabel =
     user?.userType === USER_TYPES.SERVICE_CENTER
       ? t('portal.serviceCenterDashboardTitle')
@@ -90,22 +94,43 @@ export function PortalLayout() {
     ...(user?.userType === USER_TYPES.COMPANY && user?.role === 'Supervisor'
       ? [
           {
-            key: ROUTES.PORTAL_COMPANY_EMPLOYEES,
+            key: 'supervisor-my-team',
             icon: <TeamOutlined />,
-            label: t('portal.employeesTitle'),
-            onClick: () => {
-              navigate(ROUTES.PORTAL_COMPANY_EMPLOYEES);
-              setDrawerOpen(false);
-            },
-          },
-          {
-            key: ROUTES.PORTAL_COMPANY_SEND_NOTIFICATIONS,
-            icon: <BellOutlined />,
-            label: t('portal.supervisorSendNotificationsTitle'),
-            onClick: () => {
-              navigate(ROUTES.PORTAL_COMPANY_SEND_NOTIFICATIONS);
-              setDrawerOpen(false);
-            },
+            label: t('portal.myTeamMenu'),
+            children: [
+              {
+                key: ROUTES.PORTAL_COMPANY_EMPLOYEES,
+                label: t('portal.employeesTitle'),
+                onClick: () => {
+                  navigate(ROUTES.PORTAL_COMPANY_EMPLOYEES);
+                  setDrawerOpen(false);
+                },
+              },
+              {
+                key: ROUTES.PORTAL_COMPANY_SUPERVISOR_ATTENDANCE,
+                label: t('portal.supervisorAttendanceTitle'),
+                onClick: () => {
+                  navigate(ROUTES.PORTAL_COMPANY_SUPERVISOR_ATTENDANCE);
+                  setDrawerOpen(false);
+                },
+              },
+              {
+                key: ROUTES.PORTAL_COMPANY_SUPERVISOR_PENDING,
+                label: t('portal.supervisorPendingMenu'),
+                onClick: () => {
+                  navigate(ROUTES.PORTAL_COMPANY_SUPERVISOR_PENDING);
+                  setDrawerOpen(false);
+                },
+              },
+              {
+                key: ROUTES.PORTAL_COMPANY_SEND_NOTIFICATIONS,
+                label: t('portal.supervisorSendNotificationsTitle'),
+                onClick: () => {
+                  navigate(ROUTES.PORTAL_COMPANY_SEND_NOTIFICATIONS);
+                  setDrawerOpen(false);
+                },
+              },
+            ],
           },
         ]
       : []),
@@ -134,6 +159,14 @@ export function PortalLayout() {
                 label: t('portal.hrDashboardTitle'),
                 onClick: () => {
                   navigate(ROUTES.PORTAL_HR_DASHBOARD);
+                  setDrawerOpen(false);
+                },
+              },
+              {
+                key: hrPendingRoute,
+                label: t('portal.hrPendingMenu'),
+                onClick: () => {
+                  navigate(hrPendingRoute);
                   setDrawerOpen(false);
                 },
               },
@@ -198,7 +231,7 @@ export function PortalLayout() {
                     },
                   ]
                 : []),
-              ...(hasAccess?.('reception.dashboard') || hasAccess?.('reception.serviceCenters')
+              ...(hasAccess?.('reception.serviceCenters')
                 ? [
                     {
                       key: ROUTES.PORTAL_RECEPTION_SERVICE_CENTERS,
@@ -210,9 +243,7 @@ export function PortalLayout() {
                     },
                   ]
                 : []),
-              ...(hasAccess?.('reception.dashboard') ||
-              hasAccess?.('reception.serviceCenters') ||
-              hasAccess?.('reception.nationalities')
+              ...(hasAccess?.('reception.nationalities')
                 ? [
                     {
                       key: ROUTES.PORTAL_RECEPTION_NATIONALITIES,
@@ -229,6 +260,33 @@ export function PortalLayout() {
         ]
       : []),
   ];
+
+  const [menuOpenKeys, setMenuOpenKeys] = useState([]);
+  useEffect(() => {
+    setMenuOpenKeys((prev) => {
+      const next = new Set(prev);
+      const p = location.pathname;
+      if (
+        p === ROUTES.PORTAL_COMPANY_EMPLOYEES ||
+        p === ROUTES.PORTAL_COMPANY_SUPERVISOR_ATTENDANCE ||
+        p === ROUTES.PORTAL_COMPANY_SUPERVISOR_PENDING ||
+        p === ROUTES.PORTAL_COMPANY_SEND_NOTIFICATIONS
+      ) {
+        next.add('supervisor-my-team');
+      }
+      if (p.startsWith('/portal/hr')) {
+        next.add('hr-root');
+      }
+      if (
+        p === ROUTES.PORTAL_RECEPTION_DASHBOARD ||
+        p === ROUTES.PORTAL_RECEPTION_SERVICE_CENTERS ||
+        p === ROUTES.PORTAL_RECEPTION_NATIONALITIES
+      ) {
+        next.add('reception-submenu');
+      }
+      return Array.from(next);
+    });
+  }, [location.pathname]);
 
   const isDarkSider = theme === 'dark';
   const siderBg = isDarkSider ? '#0b1220' : token.colorBgContainer;
@@ -262,46 +320,43 @@ export function PortalLayout() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: siderBg }}>
       <div
         style={{
-          margin: '18px 16px 8px',
-          paddingBottom: 12,
-          borderBottom: `1px solid ${siderBorder}`,
           flexShrink: 0,
+          width: '100%',
+          boxSizing: 'border-box',
+          padding: siderCollapsed ? '14px 10px 12px' : '16px 14px 14px',
+          borderBottom: `1px solid ${siderBorder}`,
         }}
       >
         <Button
           type="text"
           onClick={() => navigate(dashboardRoute)}
           style={{
+            width: '100%',
             height: 'auto',
-            padding: '4px 2px',
-            fontWeight: 700,
-            fontSize: siderCollapsed ? 15 : 17,
-            letterSpacing: '-0.02em',
-            color: siderAccent,
-            lineHeight: 1.25,
+            minHeight: 0,
+            padding: siderCollapsed ? 6 : 8,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            lineHeight: 0,
           }}
+          aria-label={t('app.shortName')}
         >
-          {siderCollapsed ? t('app.shortName').slice(0, 1) : t('app.shortName')}
-        </Button>
-        {!siderCollapsed ? (
-          <Text
+          <KamelLogo
+            fullWidth
+            alt=""
             style={{
-              display: 'block',
-              marginTop: 2,
-              fontSize: 11,
-              color: siderTextColor,
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
+              maxHeight: siderCollapsed ? 40 : 56,
             }}
-          >
-            {t('nav.portal')}
-          </Text>
-        ) : null}
+          />
+        </Button>
       </div>
       <Menu
         theme={isDarkSider ? 'dark' : 'light'}
         mode="inline"
         selectedKeys={[location.pathname]}
+        openKeys={menuOpenKeys}
+        onOpenChange={setMenuOpenKeys}
         items={sidebarMenuItems}
         style={{
           borderRight: 0,
@@ -317,7 +372,7 @@ export function PortalLayout() {
             direction={siderCollapsed ? 'vertical' : 'horizontal'}
             style={{
               width: '100%',
-              marginBottom: siderCollapsed ? 0 : 10,
+              marginBottom: 0,
               justifyContent: siderCollapsed ? 'center' : isRtl ? 'flex-end' : 'flex-start',
             }}
           >
@@ -341,6 +396,7 @@ export function PortalLayout() {
               />
             </Tooltip>
           </Space>
+          {/* Sidebar user name / icon (hidden for now — restore when needed)
           {!siderCollapsed ? (
             <Text
               style={{
@@ -362,6 +418,7 @@ export function PortalLayout() {
               </div>
             </Tooltip>
           )}
+          */}
         </div>
       </div>
     </div>
@@ -413,24 +470,19 @@ export function PortalLayout() {
         </Sider>
       ) : (
         <Drawer
-          title={t('app.shortName')}
+          title={null}
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
           placement={isRtl ? 'right' : 'left'}
-          bodyStyle={{ padding: 0, display: 'flex', flexDirection: 'column', background: siderBg }}
-          styles={{ body: { padding: 0 } }}
-        >
-          <Menu
-            theme={isDarkSider ? 'dark' : 'light'}
-            mode="inline"
-            selectedKeys={[location.pathname]}
-            items={sidebarMenuItems}
-            style={{ flex: 1, borderRight: 0, background: 'transparent' }}
-            onClick={() => setDrawerOpen(false)}
-          />
-          <div style={{ padding: '12px 16px 20px', borderTop: `1px solid ${siderBorder}` }}>
-            <div style={{ ...footerDockStyle, margin: 0 }}>
-              <Space size={8} wrap style={{ width: '100%', marginBottom: 10 }}>
+          footer={
+            <div
+              style={{
+                padding: '12px 16px calc(14px + env(safe-area-inset-bottom, 0px))',
+                borderTop: `1px solid ${siderBorder}`,
+                background: siderBg,
+              }}
+            >
+              <Space size={10} wrap style={{ width: '100%', justifyContent: 'center' }}>
                 <Tooltip title={currentLangLabel}>
                   <Dropdown menu={{ items: langMenuItems }} placement="top" trigger={['click']}>
                     <Button type="text" icon={<GlobalOutlined />} aria-label={currentLangLabel} style={dockIconBtn()} />
@@ -446,9 +498,80 @@ export function PortalLayout() {
                   />
                 </Tooltip>
               </Space>
-              <Text style={{ display: 'block', color: siderTextColor, fontSize: 12, fontWeight: 500 }} ellipsis title={displayName}>
-                {displayName}
-              </Text>
+            </div>
+          }
+          styles={{
+            /** Prevent the whole panel from scrolling; only the menu region scrolls. */
+            content: { overflow: 'hidden' },
+            body: {
+              padding: 0,
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              flex: 1,
+              minHeight: 0,
+              background: siderBg,
+            },
+            footer: { padding: 0, borderTop: 'none' },
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100%',
+              minHeight: 0,
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                boxSizing: 'border-box',
+                padding: '16px 16px 14px',
+                borderBottom: `1px solid ${siderBorder}`,
+                flexShrink: 0,
+              }}
+            >
+              <Button
+                type="text"
+                onClick={() => {
+                  navigate(dashboardRoute);
+                  setDrawerOpen(false);
+                }}
+                style={{
+                  width: '100%',
+                  padding: 8,
+                  height: 'auto',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  lineHeight: 0,
+                }}
+                aria-label={t('app.shortName')}
+              >
+                <KamelLogo fullWidth alt="" style={{ maxHeight: 52 }} />
+              </Button>
+            </div>
+            <div
+              style={{
+                flex: 1,
+                minHeight: 0,
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                WebkitOverflowScrolling: 'touch',
+              }}
+            >
+              <Menu
+                theme={isDarkSider ? 'dark' : 'light'}
+                mode="inline"
+                selectedKeys={[location.pathname]}
+                openKeys={menuOpenKeys}
+                onOpenChange={setMenuOpenKeys}
+                items={sidebarMenuItems}
+                style={{ borderRight: 0, background: 'transparent', padding: '4px 8px 16px' }}
+                onClick={() => setDrawerOpen(false)}
+              />
             </div>
           </div>
         </Drawer>

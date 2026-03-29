@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Button, Card, Divider, Input, Space, Table, Tag, Typography, message } from 'antd';
+import { Alert, Button, Card, Divider, Input, Space, Table, Tag, Typography, theme, message } from 'antd';
 import { BellOutlined, ReloadOutlined, SendOutlined } from '@ant-design/icons';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
@@ -28,6 +28,7 @@ function renderPersonName(isAr, u) {
 }
 
 export function SupervisorSendNotificationsPage() {
+  const { token } = theme.useToken();
   const { user } = useAuth();
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar';
@@ -156,10 +157,11 @@ export function SupervisorSendNotificationsPage() {
         title: isAr ? 'الدور' : 'Role',
         dataIndex: 'role',
         key: 'role',
-        render: (v) => <Tag>{v}</Tag>,
+        width: 130,
+        render: (v) => <Tag color="blue">{t(`roles.${v || 'EmpRead'}`)}</Tag>,
       },
     ],
-    [isAr]
+    [isAr, t]
   );
 
   const schedColumns = useMemo(
@@ -211,37 +213,88 @@ export function SupervisorSendNotificationsPage() {
     return <Alert type="error" message={t('forbidden.message')} showIcon />;
   }
 
+  const scheduleShell = {
+    padding: token.paddingMD,
+    borderRadius: token.borderRadiusLG,
+    background: token.colorFillQuaternary,
+    border: `1px solid ${token.colorBorderSecondary}`,
+  };
+
   return (
     <div>
-      <Title level={4} style={{ marginBottom: 16 }}>
-        <BellOutlined /> {isAr ? 'إرسال إشعارات للموظفين' : 'Notify my employees'}
+      <Title
+        level={4}
+        style={{
+          marginBottom: token.marginMD,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          fontWeight: 600,
+        }}
+      >
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 40,
+            height: 40,
+            borderRadius: token.borderRadiusLG,
+            background: token.colorPrimaryBg,
+            color: token.colorPrimary,
+          }}
+          aria-hidden
+        >
+          <BellOutlined style={{ fontSize: 18 }} />
+        </span>
+        {t('portal.supervisorSendNotificationsTitle')}
       </Title>
 
       <Card
+        variant="borderless"
+        style={{
+          borderRadius: token.borderRadiusLG * 1.25,
+          boxShadow: token.boxShadowSecondary,
+          border: `1px solid ${token.colorBorderSecondary}`,
+        }}
+        styles={{ body: { padding: token.paddingLG } }}
         extra={
-          <Button icon={<ReloadOutlined />} onClick={() => { fetchEmployees(); loadScheduled(); }}>
+          <Button
+            shape="round"
+            icon={<ReloadOutlined />}
+            onClick={() => {
+              fetchEmployees();
+              loadScheduled();
+            }}
+          >
             {isAr ? 'تحديث' : 'Refresh'}
           </Button>
         }
       >
-        <Space direction="vertical" style={{ width: '100%' }} size="large">
-          <Space direction="vertical" style={{ width: '100%' }}>
+        <Space direction="vertical" style={{ width: '100%' }} size={token.marginLG}>
+          <Space direction="vertical" style={{ width: '100%' }} size={token.marginSM}>
             <Input
+              size="large"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder={isAr ? 'عنوان (اختياري)' : 'Title (optional)'}
               maxLength={200}
+              showCount
             />
             <TextArea
+              size="large"
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              rows={4}
+              rows={5}
               maxLength={5000}
+              showCount
               placeholder={isAr ? 'نص الإشعار' : 'Notification message'}
+              style={{ resize: 'vertical' }}
             />
-            <Space wrap>
+            <Space wrap size="middle" style={{ marginTop: token.marginXXS }}>
               <Button
                 type="primary"
+                size="large"
                 icon={<SendOutlined />}
                 loading={sending}
                 onClick={sendNow}
@@ -249,47 +302,67 @@ export function SupervisorSendNotificationsPage() {
               >
                 {isAr ? 'إرسال الآن' : 'Send now'}
               </Button>
-              <Text type="secondary">
+              <Tag color="processing" style={{ marginInlineEnd: 0, padding: '4px 12px', fontSize: 13 }}>
                 {isAr ? `المحددون: ${selectedRowKeys.length}` : `Selected: ${selectedRowKeys.length}`}
-              </Text>
+              </Tag>
             </Space>
           </Space>
 
-          <Divider>{isAr ? 'جدولة' : 'Schedule'}</Divider>
-          <NotificationSchedulePanel
-            isAr={isAr}
-            submitting={scheduling}
-            disabled={selectedRowKeys.length === 0}
-            onSchedule={schedule}
-            timeZoneHint={
-              isAr
-                ? 'الوقت يُفسَّر حسب المنطقة الزمنية الرياض (Asia/Riyadh) على الخادم.'
-                : 'Times are interpreted in Asia/Riyadh on the server.'
-            }
-          />
+          <Divider dashed style={{ margin: `${token.marginXS}px 0` }}>
+            <Text type="secondary" style={{ fontSize: 13, fontWeight: 500 }}>
+              {isAr ? 'جدولة' : 'Schedule'}
+            </Text>
+          </Divider>
+
+          <div style={scheduleShell}>
+            <NotificationSchedulePanel
+              isAr={isAr}
+              submitting={scheduling}
+              disabled={selectedRowKeys.length === 0}
+              onSchedule={schedule}
+              timeZoneHint={
+                isAr
+                  ? 'الوقت يُفسَّر حسب المنطقة الزمنية الرياض (Asia/Riyadh) على الخادم.'
+                  : 'Times are interpreted in Asia/Riyadh on the server.'
+              }
+            />
+          </div>
 
           <Table
             rowKey="id"
             loading={loading}
-            size="small"
+            size="middle"
+            bordered
             columns={columns}
             dataSource={employees}
-            pagination={{ pageSize: 10 }}
+            pagination={{
+              pageSize: 10,
+              hideOnSinglePage: true,
+              showSizeChanger: false,
+              showTotal: (n) =>
+                isAr ? `إجمالي ${n}` : `${n} ${n === 1 ? 'employee' : 'employees'}`,
+            }}
+            scroll={{ x: 'max-content' }}
             rowSelection={{
               selectedRowKeys,
               onChange: setSelectedRowKeys,
               preserveSelectedRowKeys: true,
+              columnWidth: 48,
             }}
           />
 
-          <Title level={5}>{isAr ? 'الإشعارات المجدولة (معلقة)' : 'Pending scheduled'}</Title>
+          <Title level={5} style={{ marginTop: token.marginXS, marginBottom: token.marginSM, fontWeight: 600 }}>
+            {isAr ? 'الإشعارات المجدولة (معلقة)' : 'Pending scheduled'}
+          </Title>
           <Table
             rowKey="id"
             loading={loadingSched}
-            size="small"
+            size="middle"
+            bordered
             columns={schedColumns}
             dataSource={scheduledRows}
             pagination={false}
+            scroll={{ x: 'max-content' }}
             locale={{ emptyText: isAr ? 'لا شيء مجدول' : 'Nothing scheduled' }}
           />
         </Space>

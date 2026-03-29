@@ -9,6 +9,8 @@ import { SuperAdminRoute } from './SuperAdminRoute';
 import { PublicOnlyRoute } from './PublicOnlyRoute';
 import { PortalRedirect } from './PortalRedirect';
 import { RequirePortalCompany, RequirePortalServiceCenter } from './PortalDashboardRoute';
+import { HrPendingApprovalsPage } from '../pages/portal/company/hr/HrPendingApprovalsPage';
+import { SupervisorPendingApprovalsPage } from '../pages/portal/company/supervisor/SupervisorPendingApprovalsPage';
 
 import { HomePage } from '../pages/public/HomePage';
 import { LoginPage } from '../pages/public/LoginPage';
@@ -25,6 +27,7 @@ import { HrSupervisorsPage } from '../pages/portal/company/hr/HrSupervisorsPage'
 import { HrAttendancePage } from '../pages/portal/company/hr/HrAttendancePage';
 import { HrSendNotificationsPage } from '../pages/portal/company/hr/HrSendNotificationsPage';
 import { SupervisorSendNotificationsPage } from '../pages/portal/company/SupervisorSendNotificationsPage';
+import { SupervisorAttendancePage } from '../pages/portal/company/supervisor/SupervisorAttendancePage';
 import { ReceptionDashboardPage } from '../pages/portal/company/reception/ReceptionDashboardPage';
 import { ReceptionServiceCentersPage } from '../pages/portal/company/reception/ReceptionServiceCentersPage';
 import { ReceptionNationalitiesPage } from '../pages/portal/company/reception/ReceptionNationalitiesPage';
@@ -120,6 +123,22 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: 'company/supervisor/attendance',
+        element: (
+          <RequirePortalCompany>
+            <SupervisorAttendancePage />
+          </RequirePortalCompany>
+        ),
+      },
+      {
+        path: 'company/supervisor/pending-approvals',
+        element: (
+          <RequirePortalCompany>
+            <SupervisorPendingApprovalsPage />
+          </RequirePortalCompany>
+        ),
+      },
+      {
         path: 'company/send-notifications',
         element: (
           <RequirePortalCompany>
@@ -148,6 +167,22 @@ const router = createBrowserRouter([
         element: (
           <RequirePortalServiceCenter>
             <NotificationsPage />
+          </RequirePortalServiceCenter>
+        ),
+      },
+      {
+        path: 'company/hr/pending-approvals',
+        element: (
+          <RequirePortalCompany>
+            <HrPendingApprovalsPage />
+          </RequirePortalCompany>
+        ),
+      },
+      {
+        path: 'service-center/hr/pending-approvals',
+        element: (
+          <RequirePortalServiceCenter>
+            <HrPendingApprovalsPage />
           </RequirePortalServiceCenter>
         ),
       },

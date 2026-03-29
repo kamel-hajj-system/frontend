@@ -18,3 +18,10 @@ export async function getHrAttendance(params = {}) {
   const q = toQueryString(params);
   return apiRequest(`/hr/attendance${q ? `?${q}` : ''}`);
 }
+
+/** Company supervisor: read-only attendance for direct reports only. */
+export async function getSupervisorAttendance(params = {}) {
+  const q = toQueryString(params);
+  const path = '/portal/company/supervisor/attendance' + (q ? `?${q}` : '');
+  return apiRequest(path);
+}

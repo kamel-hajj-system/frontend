@@ -38,8 +38,7 @@ export function ReceptionServiceCentersPage() {
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar';
 
-  const canView =
-    hasAccess('reception.dashboard') || hasAccess('reception.serviceCenters');
+  const canView = hasAccess('reception.serviceCenters');
 
   const [centers, setCenters] = useState([]);
   const [loading, setLoading] = useState(true);

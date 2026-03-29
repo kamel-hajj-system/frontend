@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Card, Modal, Form, Input, Switch, message, TimePicker } from 'antd';
+import { Button, Card, Modal, Form, Input, Switch, message, TimePicker, Select, Typography } from 'antd';
 import { PlusOutlined, EditOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getShifts, createShift, updateShift, deleteShift } from '../../api/shifts';
+import { getLocations } from '../../api/locations';
 import { ResponsiveTable } from '../../components/common/ResponsiveTable';
 import dayjs from 'dayjs';
+
+const { Text } = Typography;
 
 function formatTime(dateStr) {
   if (!dateStr) return '—';
@@ -26,8 +29,10 @@ function toDayjsTime(hhmm) {
 }
 
 export function ShiftsPage() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const isAr = lang === 'ar';
   const [list, setList] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [viewShift, setViewShift] = useState(null);
@@ -47,6 +52,10 @@ export function ShiftsPage() {
     fetchShifts();
   }, [fetchShifts]);
 
+  useEffect(() => {
+    getLocations({ isActive: 'true' }).then(setLocations).catch(() => setLocations([]));
+  }, []);
+
   const openCreate = () => {
     setEditingId(null);
     form.setFieldsValue({
@@ -55,6 +64,7 @@ export function ShiftsPage() {
       startTime: toDayjsTime('06:00'),
       endTime: toDayjsTime('14:00'),
       isForEmployee: true,
+      locationId: undefined,
     });
     setModalOpen(true);
   };
@@ -69,6 +79,7 @@ export function ShiftsPage() {
       startTime: start,
       endTime: end,
       isForEmployee: record.isForEmployee ?? true,
+      locationId: record.locationId || undefined,
     });
     setModalOpen(true);
   };
@@ -83,6 +94,7 @@ export function ShiftsPage() {
         startTime: values.startTime?.format ? values.startTime.format('HH:mm') : '00:00',
         endTime: values.endTime?.format ? values.endTime.format('HH:mm') : '00:00',
         isForEmployee: values.isForEmployee !== false,
+        locationId: values.locationId ?? null,
       };
       if (editingId) {
         await updateShift(editingId, payload);
@@ -140,6 +152,16 @@ export function ShiftsPage() {
       dataIndex: 'isForEmployee',
       key: 'isForEmployee',
       render: (v) => (v ? t('superadmin.yes') : t('superadmin.no')),
+    },
+    {
+      title: t('superadmin.shiftWorkLocation'),
+      key: 'workLoc',
+      ellipsis: true,
+      render: (_, r) => {
+        const loc = r.shiftLocation;
+        if (!loc) return '—';
+        return isAr ? loc.locationAr || loc.name : loc.name;
+      },
     },
     {
       title: t('superadmin.actions'),
@@ -216,6 +238,22 @@ export function ShiftsPage() {
           <Form.Item name="isForEmployee" label={t('superadmin.isForEmployee')} valuePropName="checked">
             <Switch />
           </Form.Item>
+          <Form.Item
+            name="locationId"
+            label={t('superadmin.shiftWorkLocation')}
+            extra={<Text type="secondary">{t('superadmin.shiftWorkLocationHint')}</Text>}
+          >
+            <Select
+              allowClear
+              showSearch
+              optionFilterProp="label"
+              placeholder={t('superadmin.shiftWorkLocation')}
+              options={locations.map((l) => ({
+                value: l.id,
+                label: isAr ? l.locationAr || l.name : l.name,
+              }))}
+            />
+          </Form.Item>
         </Form>
       </Modal>
       <Modal
@@ -231,6 +269,14 @@ export function ShiftsPage() {
             <dt><strong>{t('superadmin.startTime')}</strong></dt><dd>{formatTime(viewShift.startTime)}</dd>
             <dt><strong>{t('superadmin.endTime')}</strong></dt><dd>{formatTime(viewShift.endTime)}</dd>
             <dt><strong>{t('superadmin.isForEmployee')}</strong></dt><dd>{viewShift.isForEmployee ? t('superadmin.yes') : t('superadmin.no')}</dd>
+            <dt><strong>{t('superadmin.shiftWorkLocation')}</strong></dt>
+            <dd>
+              {viewShift.shiftLocation
+                ? isAr
+                  ? viewShift.shiftLocation.locationAr || viewShift.shiftLocation.name
+                  : viewShift.shiftLocation.name
+                : '—'}
+            </dd>
           </dl>
         )}
       </Modal>

@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Badge, Button, Card, Input, Space, Tag, Typography, message } from 'antd';
-import { TeamOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { Alert, Badge, Button, Card, Form, Input, Select, Space, Tag, Typography, message } from 'antd';
+import { TeamOutlined, ReloadOutlined, SearchOutlined, EditOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../contexts/LanguageContext';
-import { getMyEmployees } from '../../../../api/users';
+import { getMyEmployees, updateMyEmployeeRole } from '../../../../api/users';
 import { ResponsiveTable } from '../../../../components/common/ResponsiveTable';
-import { USER_TYPES } from '../../../../utils/constants';
+import { USER_TYPES, SUPERVISOR_ASSIGNABLE_ROLES } from '../../../../utils/constants';
 
 const { Title, Text } = Typography;
+const { Option } = Select;
 
 function renderPersonName(isAr, u) {
   const primary = (isAr ? u.fullNameAr : u.fullName) || u.fullName || u.fullNameAr || u.email || '';
@@ -28,6 +29,9 @@ export function EmployeesPage() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState('');
   const [rows, setRows] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [savingId, setSavingId] = useState(null);
+  const [form] = Form.useForm();
 
   const canView = user?.userType === USER_TYPES.COMPANY && user?.role === 'Supervisor';
 
@@ -47,6 +51,37 @@ export function EmployeesPage() {
     if (canView) fetchEmployees();
   }, [canView, fetchEmployees]);
 
+  const startEdit = (record) => {
+    setEditingId(record.id);
+    const r = record.role || 'EmpRead';
+    form.setFieldsValue({
+      role: SUPERVISOR_ASSIGNABLE_ROLES.includes(r) ? r : 'EmpRead',
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    form.resetFields();
+  };
+
+  const submitEdit = async () => {
+    if (!editingId) return;
+    try {
+      const values = await form.validateFields();
+      setSavingId(editingId);
+      await updateMyEmployeeRole(editingId, values.role);
+      message.success(isAr ? 'تم تحديث الدور' : 'Role updated');
+      setEditingId(null);
+      form.resetFields();
+      fetchEmployees();
+    } catch (err) {
+      if (err?.errorFields) return;
+      message.error(err?.message || (isAr ? 'فشل التحديث' : 'Update failed'));
+    } finally {
+      setSavingId(null);
+    }
+  };
+
   if (!canView) {
     return <Alert type="error" message={t('forbidden.message')} showIcon />;
   }
@@ -63,16 +98,58 @@ export function EmployeesPage() {
         title: isAr ? 'الدور' : 'Role',
         dataIndex: 'role',
         key: 'role',
-        render: (v) => <Tag>{v}</Tag>,
+        width: 220,
+        render: (v, record) =>
+          editingId === record.id ? (
+            <Form.Item name="role" style={{ margin: 0 }} rules={[{ required: true }]}>
+              <Select style={{ minWidth: 160 }}>
+                {SUPERVISOR_ASSIGNABLE_ROLES.map((role) => (
+                  <Option key={role} value={role}>
+                    {t(`roles.${role}`)}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          ) : (
+            <Tag>{t(`roles.${v || 'EmpRead'}`)}</Tag>
+          ),
       },
       {
         title: isAr ? 'نشط' : 'Active',
         dataIndex: 'isActive',
         key: 'isActive',
+        width: 100,
         render: (v) => (v ? <Tag color="success">{isAr ? 'نعم' : 'Yes'}</Tag> : <Tag color="error">{isAr ? 'لا' : 'No'}</Tag>),
       },
+      {
+        title: isAr ? 'إجراءات' : 'Actions',
+        key: 'actions',
+        width: 200,
+        fixed: 'right',
+        render: (_, record) =>
+          editingId === record.id ? (
+            <Space>
+              <Button
+                type="primary"
+                size="small"
+                icon={<SaveOutlined />}
+                loading={savingId === record.id}
+                onClick={submitEdit}
+              >
+                {isAr ? 'حفظ' : 'Save'}
+              </Button>
+              <Button size="small" icon={<CloseOutlined />} onClick={cancelEdit}>
+                {isAr ? 'إلغاء' : 'Cancel'}
+              </Button>
+            </Space>
+          ) : (
+            <Button type="link" size="small" icon={<EditOutlined />} onClick={() => startEdit(record)}>
+              {isAr ? 'تعديل الدور' : 'Edit role'}
+            </Button>
+          ),
+      },
     ],
-    [isAr]
+    [isAr, editingId, savingId, t]
   );
 
   return (
@@ -106,9 +183,17 @@ export function EmployeesPage() {
       </Card>
 
       <Card>
-        <ResponsiveTable rowKey="id" columns={columns} dataSource={rows} loading={loading} pagination={false} />
+        <Form form={form} component={false}>
+          <ResponsiveTable
+            rowKey="id"
+            columns={columns}
+            dataSource={rows}
+            loading={loading}
+            pagination={false}
+            scroll={{ x: 720 }}
+          />
+        </Form>
       </Card>
     </div>
   );
 }
-
