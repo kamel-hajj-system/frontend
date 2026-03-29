@@ -52,7 +52,7 @@ export function HomePage() {
     { titleKey: 'home.service4Title', descKey: 'home.service4Desc' },
   ];
 
-  const clients = ['ORG α', 'ORG β', 'ORG γ', 'ORG δ', 'ORG ε', 'ORG ζ'];
+  const clients = ['WAZN', 'Ekram Aldyf','UTrust'];
 
   const muted = { color: token.colorTextSecondary };
 
@@ -82,18 +82,6 @@ export function HomePage() {
             <div className="kamel-home-pill" style={{ color: token.colorPrimary }}>
               <RocketOutlined />
               {t('home.heroBadge')}
-            </div>
-            <div className="kamel-home-hero__brand" style={{ marginBottom: 22 }}>
-              <KamelLogo
-                variant={homeLogoVariant}
-                height={96}
-                alt={t('app.shortName')}
-                style={{
-                  height: 'clamp(56px, 14vw, 96px)',
-                  width: 'auto',
-                  maxWidth: 'min(440px, 100%)',
-                }}
-              />
             </div>
             <Title
               level={1}
@@ -263,7 +251,7 @@ export function HomePage() {
                     {t('home.productEmployeeTitle')}
                   </Title>
                   <Paragraph style={{ ...muted, marginBottom: 14, lineHeight: 1.65 }}>{t('home.productEmployeeDesc')}</Paragraph>
-                  <span className="kamel-home-coming-badge">{t('home.comingSoon')}</span>
+                  {/* <span className="kamel-home-coming-badge">{t('home.comingSoon')}</span> */}
                 </div>
               </div>
             </Col>
@@ -276,7 +264,7 @@ export function HomePage() {
                     {t('home.productPilgrimTitle')}
                   </Title>
                   <Paragraph style={{ ...muted, marginBottom: 14, lineHeight: 1.65 }}>{t('home.productPilgrimDesc')}</Paragraph>
-                  <span className="kamel-home-coming-badge">{t('home.comingSoon')}</span>
+                  {/* <span className="kamel-home-coming-badge">{t('home.comingSoon')}</span> */}
                 </div>
               </div>
             </Col>
@@ -374,9 +362,9 @@ export function HomePage() {
             <Title level={2} className="kamel-home-title-h2">
               {t('home.clientsTitle')}
             </Title>
-            <Paragraph style={{ ...muted, fontSize: 16, maxWidth: 540, margin: '14px auto 0', lineHeight: 1.65 }}>
+            {/* <Paragraph style={{ ...muted, fontSize: 16, maxWidth: 540, margin: '14px auto 0', lineHeight: 1.65 }}>
               {t('home.clientsLead')}
-            </Paragraph>
+            </Paragraph> */}
           </div>
           <Row gutter={[16, 16]} justify="center">
             {clients.map((name) => (
@@ -444,9 +432,9 @@ export function HomePage() {
                 {t('home.footerProducts')}
               </Text>
               <Space direction="vertical" size={10}>
-                <Link to={ROUTES.LOGIN}>{t('home.ctaSignIn')}</Link>
-                <Link to={ROUTES.SIGN_UP_NORMAL}>{t('nav.signUpNormal')}</Link>
-                <Link to={ROUTES.SIGN_UP_SERVICE_CENTER}>{t('nav.signUpServiceCenter')}</Link>
+                {t('home.badgeWeb')}
+                {t('home.productEmployeeTitle')}
+                {t('home.productPilgrimTitle')}
               </Space>
             </Col>
             <Col xs={24} sm={8} md={6}>
