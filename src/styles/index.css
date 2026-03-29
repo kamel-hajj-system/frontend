@@ -5,15 +5,20 @@
 @tailwind utilities;
 
 @layer base {
+  /* Fonts: Poppins (EN) vs Cairo (AR). LanguageContext sets document.documentElement.dir. */
   html {
     @apply antialiased;
+    font-family: var(--font-sans);
+  }
+  html[dir='rtl'] {
+    font-family: var(--font-arabic);
   }
   body {
     @apply bg-[var(--color-surface)] text-[var(--color-text)];
-    font-family: var(--font-sans);
+    font-family: inherit;
   }
-  [dir='rtl'] body {
-    font-family: var(--font-arabic);
+  #root {
+    font-family: inherit;
   }
 }
 

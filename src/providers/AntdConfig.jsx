@@ -14,6 +14,8 @@ export function AntdConfig({ children }) {
 
   const isDark = theme === 'dark';
   const direction = lang === 'ar' ? 'rtl' : 'ltr';
+  const fontFamily =
+    lang === 'ar' ? 'var(--font-arabic), system-ui, sans-serif' : 'var(--font-sans), system-ui, sans-serif';
 
   return (
     <ConfigProvider
@@ -25,7 +27,7 @@ export function AntdConfig({ children }) {
           colorPrimary: isDark ? '#2dd4bf' : '#0f766e',
           borderRadius: 8,
           controlHeight: 40,
-          fontFamily: 'var(--font-sans), system-ui, sans-serif',
+          fontFamily,
         },
         components: {
           Layout: {
