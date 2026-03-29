@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, Button, Dropdown, Drawer, Typography, Grid } from 'antd';
+import { Layout, Menu, Button, Dropdown, Drawer, Typography, Grid, Space } from 'antd';
 import {
   CrownOutlined,
   SafetyOutlined,
@@ -22,6 +22,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { ROUTES } from '../utils/constants';
 import { KamelLogo } from '../components/common/KamelLogo';
 import { NotificationBellDropdown } from '../components/common/NotificationBellDropdown';
+import { PWAInstallButton } from '../components/pwa/PWAInstallButton';
 
 const { Header, Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -144,7 +145,8 @@ export function SuperAdminLayout() {
   );
 
   const headerActions = (
-    <>
+    <Space size={8} align="center" wrap>
+      <PWAInstallButton />
       <Dropdown menu={{ items: langMenuItems }} placement="bottomEnd">
         <Button type="text" icon={<GlobalOutlined />} />
       </Dropdown>
@@ -153,7 +155,7 @@ export function SuperAdminLayout() {
         <Button icon={<UserOutlined />}>{isAr ? 'خروج' : 'Logout'}</Button>
       </Dropdown>
       <NotificationBellDropdown allNotificationsPath={ROUTES.SUPER_ADMIN_NOTIFICATION_INBOX} placement="bottomRight" />
-    </>
+    </Space>
   );
 
   return (

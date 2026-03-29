@@ -26,18 +26,20 @@ import { NotificationBellDropdown } from '../common/NotificationBellDropdown';
 import { KamelLogo } from '../common/KamelLogo';
 import { usePublicContentScrollRoot } from '../../contexts/PublicContentScrollContext';
 import { usePublicHomeScrollSpy } from '../../hooks/usePublicHomeScrollSpy';
+import { PWAInstallButton } from '../pwa/PWAInstallButton';
 
 const { Text } = Typography;
 
 const { useBreakpoint } = Grid;
 
-function navTextButtonStyle(active, token) {
+function navTextButtonStyle(active, token, compact) {
   return {
     fontWeight: active ? 600 : 500,
     color: active ? token.colorPrimary : token.colorText,
     borderRadius: token.borderRadiusLG,
-    height: 40,
-    paddingInline: 16,
+    height: compact ? 32 : 40,
+    paddingInline: compact ? 10 : 16,
+    fontSize: compact ? 13 : undefined,
     border: `1px solid ${active ? token.colorPrimary : 'transparent'}`,
     background: active ? `${token.colorPrimary}12` : 'transparent',
   };
@@ -66,6 +68,10 @@ export function PublicNavbar() {
   const landingPath = isAuthenticated && user ? getAuthenticatedLandingRoute(user) : ROUTES.HOME;
 
   const isHome = location.pathname === ROUTES.HOME;
+  /** Marketing home (logged-out): use the same top navbar on phones as on desktop — no hamburger drawer. */
+  const isPublicMarketingHome = !isAuthenticated && isHome;
+  const compactNav = !isDesktop && isPublicMarketingHome;
+  const showDesktopNavLayout = isDesktop || isPublicMarketingHome;
   /** Larger wordmark on marketing home; dark mode uses public dark artwork. */
   const navLogoVariant = isHome ? (theme === 'dark' ? 'darkPublic' : 'lightPublic') : 'auto';
   const navLogoHeightDesktop = isHome ? 52 : 34;
@@ -252,34 +258,34 @@ export function PublicNavbar() {
 
   const isAppEntryActive = location.pathname === landingPath;
 
-  const desktopPublicCenter = (
-    <Space size={4} align="center" wrap>
+  const publicNavLinks = (
+    <>
       <Button
         type="text"
         icon={<HomeOutlined />}
         onClick={() => navigate({ pathname: ROUTES.HOME, hash: '' })}
-        style={navTextButtonStyle(isHome && homeScrollSpyId === 'home-top', token)}
+        style={navTextButtonStyle(isHome && homeScrollSpyId === 'home-top', token, compactNav)}
       >
         {t('nav.home')}
       </Button>
       <Button
         type="text"
         onClick={() => goToHomeSection('services')}
-        style={navTextButtonStyle(isHome && homeScrollSpyId === 'services', token)}
+        style={navTextButtonStyle(isHome && homeScrollSpyId === 'services', token, compactNav)}
       >
         {t('nav.sectionServices')}
       </Button>
       <Button
         type="text"
         onClick={() => goToHomeSection('products')}
-        style={navTextButtonStyle(isHome && homeScrollSpyId === 'products', token)}
+        style={navTextButtonStyle(isHome && homeScrollSpyId === 'products', token, compactNav)}
       >
         {t('nav.sectionProducts')}
       </Button>
       <Button
         type="text"
         onClick={() => goToHomeSection('about')}
-        style={navTextButtonStyle(isHome && homeScrollSpyId === 'about', token)}
+        style={navTextButtonStyle(isHome && homeScrollSpyId === 'about', token, compactNav)}
       >
         {t('nav.sectionAbout')}
       </Button>
@@ -290,33 +296,36 @@ export function PublicNavbar() {
           icon={<RocketOutlined />}
           style={{
             fontWeight: 600,
-            height: 40,
-            paddingInline: 18,
+            height: compactNav ? 32 : 40,
+            paddingInline: compactNav ? 12 : 18,
+            fontSize: compactNav ? 13 : undefined,
             boxShadow: `0 4px 14px ${token.colorPrimary}40`,
           }}
         >
-          {t('nav.joinUs')} <DownOutlined style={{ fontSize: 12, opacity: 0.85 }} />
+          {t('nav.joinUs')} <DownOutlined style={{ fontSize: compactNav ? 10 : 12, opacity: 0.85 }} />
         </Button>
       </Dropdown>
-    </Space>
+    </>
   );
+
+  const desktopPublicCenter = <Space size={4}>{publicNavLinks}</Space>;
 
   const desktopAuthCenter = (
     <Space size={4} wrap align="center">
-      <Button
-        type="text"
-        icon={<HomeOutlined />}
-        onClick={goBrandOrAppHome}
-        style={navTextButtonStyle(isAppEntryActive, token)}
-      >
-        {t('nav.home')}
-      </Button>
+        <Button
+          type="text"
+          icon={<HomeOutlined />}
+          onClick={goBrandOrAppHome}
+          style={navTextButtonStyle(isAppEntryActive, token, false)}
+        >
+          {t('nav.home')}
+        </Button>
       {isSuperAdmin ? (
         <Button
           type="text"
           icon={<CrownOutlined />}
           onClick={() => navigate(ROUTES.SUPER_ADMIN_DASHBOARD)}
-          style={navTextButtonStyle(location.pathname.startsWith('/superadmin'), token)}
+          style={navTextButtonStyle(location.pathname.startsWith('/superadmin'), token, false)}
         >
           {t('nav.superadmin')}
         </Button>
@@ -325,7 +334,7 @@ export function PublicNavbar() {
           type="text"
           icon={<AppstoreOutlined />}
           onClick={() => navigate(portalEntryRoute)}
-          style={navTextButtonStyle(location.pathname.startsWith('/portal'), token)}
+          style={navTextButtonStyle(location.pathname.startsWith('/portal'), token, false)}
         >
           {t('nav.portal')}
         </Button>
@@ -334,7 +343,7 @@ export function PublicNavbar() {
         type="text"
         icon={<BellOutlined />}
         onClick={() => navigate(notificationsRoute)}
-        style={navTextButtonStyle(location.pathname.includes('notification'), token)}
+        style={navTextButtonStyle(location.pathname.includes('notification'), token, false)}
       >
         {t('nav.notifications')}
       </Button>
@@ -342,19 +351,26 @@ export function PublicNavbar() {
   );
 
   const desktopRightTools = (
-    <Space size={4} align="center">
+    <Space size={compactNav ? 2 : 4} align="center">
+      <PWAInstallButton size={compactNav ? 'small' : 'large'} compact={compactNav} />
       {isAuthenticated && (
-        <Text type="secondary" style={{ maxWidth: 140, fontSize: 13 }} ellipsis title={displayName}>
+        <Text type="secondary" style={{ maxWidth: compactNav ? 100 : 140, fontSize: 13 }} ellipsis title={displayName}>
           {displayName}
         </Text>
       )}
       <Dropdown menu={{ items: langMenuItems }} placement="bottomRight" trigger={['click']}>
-        <Button type="text" shape="circle" size="large" icon={<GlobalOutlined />} aria-label={LANGUAGES.find((l) => l.code === lang)?.label} />
+        <Button
+          type="text"
+          shape="circle"
+          size={compactNav ? 'small' : 'large'}
+          icon={<GlobalOutlined />}
+          aria-label={LANGUAGES.find((l) => l.code === lang)?.label}
+        />
       </Dropdown>
       <Button
         type="text"
         shape="circle"
-        size="large"
+        size={compactNav ? 'small' : 'large'}
         icon={theme === 'dark' ? <SunOutlined /> : <MoonOutlined />}
         onClick={toggleTheme}
         aria-label={theme === 'dark' ? t('theme.light') : t('theme.dark')}
@@ -362,7 +378,7 @@ export function PublicNavbar() {
       {isAuthenticated && <NotificationBellDropdown allNotificationsPath={notificationsRoute} placement="bottomRight" />}
       {isAuthenticated && (
         <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={['click']}>
-          <Button type="text" shape="circle" size="large" icon={<UserOutlined />} aria-label={t('nav.account')} />
+          <Button type="text" shape="circle" size={compactNav ? 'small' : 'large'} icon={<UserOutlined />} aria-label={t('nav.account')} />
         </Dropdown>
       )}
     </Space>
@@ -389,56 +405,117 @@ export function PublicNavbar() {
           style={{
             maxWidth: 1200,
             margin: '0 auto',
-            padding: isHome ? '12px 20px' : '10px 20px',
+            padding: isHome ? (compactNav ? '10px 14px 12px' : '12px 20px') : '10px 20px',
             display: 'flex',
             alignItems: 'center',
-            gap: 16,
+            gap: compactNav ? 0 : 16,
           }}
         >
-          {isDesktop ? (
-            <>
-              <div style={{ flex: 1, minWidth: 0, display: 'flex', justifyContent: 'flex-start' }}>
-                <Button
-                  type="text"
-                  onClick={goBrandOrAppHome}
+          {showDesktopNavLayout ? (
+            compactNav ? (
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0 }}>
+                <div
                   style={{
-                    height: isHome ? 56 : 44,
-                    paddingInline: isHome ? 4 : 6,
-                    display: 'inline-flex',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 12,
+                    width: '100%',
+                  }}
+                >
+                  <Button
+                    type="text"
+                    onClick={goBrandOrAppHome}
+                    style={{
+                      height: 44,
+                      paddingInline: isHome ? 4 : 6,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      flexShrink: 0,
+                    }}
+                    aria-label={t('app.shortName')}
+                  >
+                    <KamelLogo
+                      variant={navLogoVariant}
+                      height={36}
+                      alt=""
+                      style={
+                        isHome
+                          ? {
+                              height: 'clamp(30px, 8vw, 40px)',
+                              width: 'auto',
+                              maxWidth: 'min(180px, 48vw)',
+                            }
+                          : undefined
+                      }
+                    />
+                  </Button>
+                  {desktopRightTools}
+                </div>
+                <nav
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    columnGap: 6,
+                    rowGap: 8,
+                    width: '100%',
+                    marginTop: 12,
+                    padding: '10px 8px',
+                    borderTop: `1px solid ${barBorder}`,
+                    borderRadius: 12,
+                    background: theme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+                  }}
+                >
+                  {publicNavLinks}
+                </nav>
+              </div>
+            ) : (
+              <>
+                <div style={{ flex: 1, minWidth: 0, display: 'flex', justifyContent: 'flex-start' }}>
+                  <Button
+                    type="text"
+                    onClick={goBrandOrAppHome}
+                    style={{
+                      height: isHome ? 56 : 44,
+                      paddingInline: isHome ? 4 : 6,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                    }}
+                    aria-label={t('app.shortName')}
+                  >
+                    <KamelLogo
+                      variant={navLogoVariant}
+                      height={navLogoHeightDesktop}
+                      alt=""
+                      style={
+                        isHome
+                          ? {
+                              height: 'clamp(44px, 5.5vw, 60px)',
+                              width: 'auto',
+                              maxWidth: 'min(360px, 42vw)',
+                            }
+                          : undefined
+                      }
+                    />
+                  </Button>
+                </div>
+                <div
+                  style={{
+                    flex: '0 1 auto',
+                    display: 'flex',
+                    justifyContent: 'center',
                     alignItems: 'center',
                   }}
-                  aria-label={t('app.shortName')}
                 >
-                  <KamelLogo
-                    variant={navLogoVariant}
-                    height={navLogoHeightDesktop}
-                    alt=""
-                    style={
-                      isHome
-                        ? {
-                            height: 'clamp(44px, 5.5vw, 60px)',
-                            width: 'auto',
-                            maxWidth: 'min(360px, 42vw)',
-                          }
-                        : undefined
-                    }
-                  />
-                </Button>
-              </div>
-              <div
-                style={{
-                  flex: '0 1 auto',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                {isAuthenticated ? desktopAuthCenter : desktopPublicCenter}
-              </div>
-              <div style={{ flex: 1, minWidth: 0, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                {desktopRightTools}
-              </div>
-            </>
+                  {isAuthenticated ? desktopAuthCenter : desktopPublicCenter}
+                </div>
+                <div style={{ flex: 1, minWidth: 0, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                  {desktopRightTools}
+                </div>
+              </>
+            )
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between', gap: 16 }}>
               <Button
@@ -468,41 +545,44 @@ export function PublicNavbar() {
         </div>
       </div>
 
-      <Drawer
-        title={
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-            <KamelLogo variant={navLogoVariant} height={navLogoDrawerHeight} alt="" />
-            <span style={{ fontWeight: 600 }}>{t('app.shortName')}</span>
-          </span>
-        }
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        placement={lang === 'ar' ? 'left' : 'right'}
-        bodyStyle={{ padding: 0 }}
-      >
-        <Menu
-          mode="inline"
-          selectedKeys={selectedKey}
-          items={menuItems}
-          style={{ height: '100%', borderRight: 0 }}
-          onClick={() => setDrawerOpen(false)}
-        />
-        <div style={{ padding: 16, borderTop: '1px solid rgba(5, 5, 5, 0.06)' }}>
-          <Dropdown menu={{ items: langMenuItems }} placement="topRight" trigger={['click']}>
-            <Button icon={<GlobalOutlined />} block style={{ marginBottom: 8 }}>
-              {LANGUAGES.find((l) => l.code === lang)?.label}
+      {!isDesktop && !isPublicMarketingHome && (
+        <Drawer
+          title={
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+              <KamelLogo variant={navLogoVariant} height={navLogoDrawerHeight} alt="" />
+              <span style={{ fontWeight: 600 }}>{t('app.shortName')}</span>
+            </span>
+          }
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          placement={lang === 'ar' ? 'left' : 'right'}
+          bodyStyle={{ padding: 0 }}
+        >
+          <Menu
+            mode="inline"
+            selectedKeys={selectedKey}
+            items={menuItems}
+            style={{ height: '100%', borderRight: 0 }}
+            onClick={() => setDrawerOpen(false)}
+          />
+          <div style={{ padding: 16, borderTop: '1px solid rgba(5, 5, 5, 0.06)' }}>
+            <PWAInstallButton block />
+            <Dropdown menu={{ items: langMenuItems }} placement="topRight" trigger={['click']}>
+              <Button icon={<GlobalOutlined />} block style={{ marginBottom: 8 }}>
+                {LANGUAGES.find((l) => l.code === lang)?.label}
+              </Button>
+            </Dropdown>
+            <Button icon={theme === 'dark' ? <SunOutlined /> : <MoonOutlined />} onClick={toggleTheme} block style={{ marginBottom: 8 }}>
+              {theme === 'dark' ? t('theme.light') : t('theme.dark')}
             </Button>
-          </Dropdown>
-          <Button icon={theme === 'dark' ? <SunOutlined /> : <MoonOutlined />} onClick={toggleTheme} block style={{ marginBottom: 8 }}>
-            {theme === 'dark' ? t('theme.light') : t('theme.dark')}
-          </Button>
-          {isAuthenticated && (
-            <Button danger icon={<LogoutOutlined />} onClick={handleLogout} block>
-              {t('nav.logout')}
-            </Button>
-          )}
-        </div>
-      </Drawer>
+            {isAuthenticated && (
+              <Button danger icon={<LogoutOutlined />} onClick={handleLogout} block>
+                {t('nav.logout')}
+              </Button>
+            )}
+          </div>
+        </Drawer>
+      )}
     </>
   );
 }

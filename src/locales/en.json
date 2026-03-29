@@ -177,7 +177,14 @@
   "pwa": {
     "updateTitle": "New version available",
     "updateMessage": "A new version of the app is available. Refresh to update.",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "install": "Install app",
+    "installAria": "Install app",
+    "iosInstallTitle": "Add Kamel to your home screen",
+    "iosInstallIntro": "On iPhone and iPad, install via Safari using Add to Home Screen:",
+    "iosStep1": "Tap the Share button in the toolbar (square with an arrow).",
+    "iosStep2": "Scroll and tap Add to Home Screen.",
+    "iosStep3": "Tap Add to confirm."
   },
   "portal": {
     "welcome": "Welcome",
@@ -246,7 +253,6 @@
     "supervisorAttendanceTitle": "Team attendance",
     "supervisorAttendanceHint": "View only. Shows check-in and check-out for employees who report to you.",
     "attendanceDepartureTitle": "Attendance & Departure",
-    "attendanceDepartureIntro": "This is the Attendance & Departure page (placeholder). Features will be added soon.",
     "hrDashboardIntro": "This dashboard is dedicated to HR to manage users and access.",
     "test": {
       "title": "Test Permission and Role",

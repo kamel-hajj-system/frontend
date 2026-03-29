@@ -19,6 +19,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { ROUTES, USER_TYPES } from '../utils/constants';
 import { NotificationBellDropdown } from '../components/common/NotificationBellDropdown';
 import { KamelLogo } from '../components/common/KamelLogo';
+import { PWAInstallButton } from '../components/pwa/PWAInstallButton';
 
 const { Header, Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -426,6 +427,7 @@ export function PortalLayout() {
 
   const headerActions = (
     <Space size={4} align="center">
+      <PWAInstallButton />
       <Tooltip title={`${t('nav.account')}${displayName ? ` — ${displayName}` : ''}`}>
         <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={['click']}>
           <Button
@@ -483,6 +485,7 @@ export function PortalLayout() {
               }}
             >
               <Space size={10} wrap style={{ width: '100%', justifyContent: 'center' }}>
+                <PWAInstallButton compact />
                 <Tooltip title={currentLangLabel}>
                   <Dropdown menu={{ items: langMenuItems }} placement="top" trigger={['click']}>
                     <Button type="text" icon={<GlobalOutlined />} aria-label={currentLangLabel} style={dockIconBtn()} />

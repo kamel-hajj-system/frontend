@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card, Typography, Alert, Button, Space, Tag, Divider, message, Descriptions } from 'antd';
-import { LoadingOutlined, ReloadOutlined } from '@ant-design/icons';
+import { LoadingOutlined } from '@ant-design/icons';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import { useAuth } from '../../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../../contexts/LanguageContext';
 import { USER_TYPES } from '../../../../../utils/constants';
 import { attendanceCheckIn, attendanceCheckOut, getAttendanceStatus } from '../../../../../api/attendance';
 
-const { Title, Paragraph } = Typography;
+const { Title } = Typography;
 
 function fmt(iso, lang) {
   if (!iso) return '—';
@@ -28,33 +28,41 @@ export function AttendanceAndDeparturePage() {
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar';
 
-  const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState(false);
   const [status, setStatus] = useState(null);
   const [geo, setGeo] = useState(null);
   const [geoError, setGeoError] = useState(null);
   const [geoLoading, setGeoLoading] = useState(false);
 
-  const refresh = useCallback(async () => {
-    if (user?.userType !== USER_TYPES.COMPANY) return;
-    setLoading(true);
-    try {
-      const res = await getAttendanceStatus(
-        geo
-          ? { lat: geo.lat, lng: geo.lng, accuracyMeters: geo.accuracyMeters }
-          : {}
-      );
-      setStatus(res);
-    } catch (err) {
-      message.error(err?.message || (isAr ? 'حدث خطأ' : 'Error'));
-    } finally {
-      setLoading(false);
-    }
-  }, [isAr, geo, user?.userType]);
+  const refresh = useCallback(
+    async (opts = {}) => {
+      const silent = opts.silent === true;
+      if (user?.userType !== USER_TYPES.COMPANY) return;
+      try {
+        const res = await getAttendanceStatus(
+          geo
+            ? { lat: geo.lat, lng: geo.lng, accuracyMeters: geo.accuracyMeters }
+            : {}
+        );
+        setStatus(res);
+      } catch (err) {
+        if (!silent) message.error(err?.message || (isAr ? 'حدث خطأ' : 'Error'));
+      }
+    },
+    [isAr, geo, user?.userType]
+  );
 
   useEffect(() => {
     if (user?.userType !== USER_TYPES.COMPANY) return;
     refresh();
+  }, [refresh, user?.userType]);
+
+  useEffect(() => {
+    if (user?.userType !== USER_TYPES.COMPANY) return;
+    const id = setInterval(() => {
+      refresh({ silent: true });
+    }, 30000);
+    return () => clearInterval(id);
   }, [refresh, user?.userType]);
 
   const requestGeo = useCallback(() => {
@@ -207,20 +215,11 @@ export function AttendanceAndDeparturePage() {
       </Title>
       <Card
         extra={
-          <Space wrap>
-            <Button type="primary" onClick={requestGeo} loading={geoLoading}>
-              {isAr ? 'تحديد الموقع' : 'Get location'}
-            </Button>
-            <Button icon={<ReloadOutlined />} onClick={refresh} loading={loading}>
-              {isAr ? 'تحديث' : 'Refresh'}
-            </Button>
-          </Space>
+          <Button type="primary" onClick={requestGeo} loading={geoLoading}>
+            {isAr ? 'تحديد الموقع' : 'Get location'}
+          </Button>
         }
       >
-        <Paragraph type="secondary" style={{ marginBottom: 12 }}>
-          {t('portal.attendanceDepartureIntro')}
-        </Paragraph>
-
         {status?.status === 'NO_SHIFT' ? (
           <Alert
             type="warning"
@@ -293,6 +292,7 @@ export function AttendanceAndDeparturePage() {
               <Descriptions.Item label={isAr ? 'نهاية الوردية' : 'Shift end'}>
                 {fmt(status.shift?.shiftEndAt, lang)}
               </Descriptions.Item>
+              {/* Hidden for a simpler view — windows still enforced on the server
               <Descriptions.Item label={isAr ? 'مسموح تسجيل الحضور من' : 'Check-in allowed from'}>
                 {fmt(status.shift?.checkInEarliestAt, lang)}
               </Descriptions.Item>
@@ -302,6 +302,7 @@ export function AttendanceAndDeparturePage() {
               <Descriptions.Item label={isAr ? 'آخر وقت لتسجيل الانصراف' : 'Latest check-out'}>
                 {fmt(status.shift?.checkOutLatestAt, lang)}
               </Descriptions.Item>
+              */}
             </Descriptions>
 
             <Divider style={{ margin: '12px 0' }} />
