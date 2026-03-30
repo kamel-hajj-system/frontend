@@ -14,7 +14,9 @@ import {
   BellOutlined,
   BarChartOutlined,
   ArrowRightOutlined,
+  MailOutlined,
 } from '@ant-design/icons';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { ROUTES } from '../../utils/constants';
@@ -439,11 +441,27 @@ export function HomePage() {
             </Col>
             <Col xs={24} sm={8} md={6}>
               <Text strong style={{ color: 'rgba(255,255,255,0.95)', display: 'block', marginBottom: 16 }}>
-                {t('home.footerCompany')}
+                {t('home.footerContactUs')}
               </Text>
-              <Space direction="vertical" size={10}>
-                <span style={{ opacity: 0.7 }}>{t('home.footerContact')}</span>
-                <span style={{ opacity: 0.55, fontSize: 13 }}>{t('home.footerLegalNote')}</span>
+              <Space direction="vertical" size={12}>
+                <a
+                  href="https://wa.me/966567387950"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="kamel-home-footer__contact-link"
+                  aria-label="WhatsApp +966567387950"
+                >
+                  <WhatsAppIcon sx={{ fontSize: 22, color: '#25D366', flexShrink: 0 }} aria-hidden />
+                  <span dir="ltr">+966567387950</span>
+                </a>
+                <a
+                  href="mailto:info@kamel-app.com"
+                  className="kamel-home-footer__contact-link"
+                  aria-label="Email info@kamel-app.com"
+                >
+                  <MailOutlined style={{ fontSize: 22, opacity: 0.95, flexShrink: 0 }} aria-hidden />
+                  <span dir="ltr">info@kamel-app.com</span>
+                </a>
               </Space>
             </Col>
           </Row>

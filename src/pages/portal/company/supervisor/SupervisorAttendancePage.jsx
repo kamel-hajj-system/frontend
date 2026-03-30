@@ -7,6 +7,7 @@ import { useLanguage } from '../../../../contexts/LanguageContext';
 import { getSupervisorAttendance } from '../../../../api/attendance';
 import { getMyEmployees } from '../../../../api/users';
 import { ResponsiveTable } from '../../../../components/common/ResponsiveTable';
+import { PortalTitleIcon } from '../../../../components/portal/PortalTitleIcon';
 import { USER_TYPES } from '../../../../utils/constants';
 
 const { Title, Text } = Typography;
@@ -228,8 +229,11 @@ export function SupervisorAttendancePage() {
 
   return (
     <div>
-      <Title level={4} style={{ marginBottom: 16 }}>
-        <CalendarOutlined /> {t('portal.supervisorAttendanceTitle')}
+      <Title level={4} style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <PortalTitleIcon>
+          <CalendarOutlined />
+        </PortalTitleIcon>
+        {t('portal.supervisorAttendanceTitle')}
       </Title>
 
       <Alert

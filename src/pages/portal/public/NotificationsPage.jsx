@@ -4,6 +4,7 @@ import { BellOutlined, CheckOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { getMyNotifications, markNotificationAsRead } from '../../../api/notifications';
 import { WebPushSettings } from '../../../components/pwa/WebPushSettings';
+import { PortalTitleIcon } from '../../../components/portal/PortalTitleIcon';
 
 const { Text, Paragraph } = Typography;
 
@@ -53,8 +54,10 @@ export function NotificationsPage() {
   return (
     <Card
       title={
-        <Space>
-          <BellOutlined />
+        <Space align="center" size={10}>
+          <PortalTitleIcon>
+            <BellOutlined />
+          </PortalTitleIcon>
           <span>{isAr ? 'الإشعارات' : 'Notifications'}</span>
           <Badge count={unread} />
         </Space>

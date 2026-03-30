@@ -6,6 +6,7 @@ import { useLanguage } from '../../../../contexts/LanguageContext';
 import { getMyEmployees, updateMyEmployeeRole } from '../../../../api/users';
 import { ResponsiveTable } from '../../../../components/common/ResponsiveTable';
 import { USER_TYPES, SUPERVISOR_ASSIGNABLE_ROLES } from '../../../../utils/constants';
+import { PortalTitleIcon } from '../../../../components/portal/PortalTitleIcon';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -154,8 +155,11 @@ export function EmployeesPage() {
 
   return (
     <div>
-      <Title level={4} style={{ marginBottom: 16 }}>
-        <TeamOutlined /> {t('portal.employeesTitle')}
+      <Title level={4} style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <PortalTitleIcon>
+          <TeamOutlined />
+        </PortalTitleIcon>
+        {t('portal.employeesTitle')}
       </Title>
 
       <Card

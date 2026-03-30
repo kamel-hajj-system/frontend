@@ -29,14 +29,16 @@ import { HrSendNotificationsPage } from '../pages/portal/company/hr/HrSendNotifi
 import { SupervisorSendNotificationsPage } from '../pages/portal/company/SupervisorSendNotificationsPage';
 import { SupervisorAttendancePage } from '../pages/portal/company/supervisor/SupervisorAttendancePage';
 import { ReceptionDashboardPage } from '../pages/portal/company/reception/ReceptionDashboardPage';
-import { ReceptionServiceCentersPage } from '../pages/portal/company/reception/ReceptionServiceCentersPage';
-import { ReceptionNationalitiesPage } from '../pages/portal/company/reception/ReceptionNationalitiesPage';
+import { ReceptionServiceCentersPage } from '../pages/portal/company/reception/service-centers/ReceptionServiceCentersPage';
+import { PilgrimCompaniesDashboardPage } from '../pages/portal/company/reception/pilgrim-companies/PilgrimCompaniesDashboardPage';
 import { SuperAdminDashboardPage } from '../pages/superadmin/SuperAdminDashboardPage';
 import { AccessControlPage } from '../pages/superadmin/AccessControlPage';
 import { AssignSupervisorPage } from '../pages/superadmin/AssignSupervisorPage';
 import { SupervisorsManagementPage } from '../pages/superadmin/SupervisorsManagementPage';
 import { LocationsPage } from '../pages/superadmin/LocationsPage';
-import { ServiceCentersPage } from '../pages/superadmin/ServiceCentersPage';
+import { ServiceCentersManagementPage } from '../pages/superadmin/ServiceCentersManagementPage';
+import { PilgrimCompaniesPage } from '../pages/superadmin/PilgrimCompaniesPage';
+import { PilgrimNationalitiesReferencePage } from '../pages/superadmin/PilgrimNationalitiesReferencePage';
 import { ShiftsPage } from '../pages/superadmin/ShiftsPage';
 import { SendNotificationsPage } from '../pages/superadmin/SendNotificationsPage';
 import { ForbiddenPage } from '../pages/ForbiddenPage';
@@ -215,8 +217,8 @@ const router = createBrowserRouter([
         element: <ReceptionServiceCentersPage />,
       },
       {
-        path: 'reception/nationalities',
-        element: <ReceptionNationalitiesPage />,
+        path: 'reception/pilgrim-companies',
+        element: <PilgrimCompaniesDashboardPage />,
       },
     ],
   },
@@ -234,7 +236,9 @@ const router = createBrowserRouter([
       { path: 'assign-supervisor', element: <AssignSupervisorPage /> },
       { path: 'supervisors', element: <SupervisorsManagementPage /> },
       { path: 'locations', element: <LocationsPage /> },
-      { path: 'service-centers', element: <ServiceCentersPage /> },
+      { path: 'service-centers', element: <ServiceCentersManagementPage /> },
+      { path: 'pilgrim-companies', element: <PilgrimCompaniesPage /> },
+      { path: 'pilgrim-nationalities', element: <PilgrimNationalitiesReferencePage /> },
       { path: 'shifts', element: <ShiftsPage /> },
       { path: 'notification-inbox', element: <NotificationsPage /> },
       { path: 'notifications', element: <SendNotificationsPage /> },

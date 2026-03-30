@@ -3,6 +3,7 @@ import { Card, Typography, Alert, Button, Space, message } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../contexts/LanguageContext';
+import { PortalTitleIcon } from '../../../../components/portal/PortalTitleIcon';
 
 const { Title, Paragraph } = Typography;
 
@@ -32,8 +33,11 @@ export function ReceptionDashboardPage() {
 
   return (
     <div>
-      <Title level={4} style={{ marginBottom: 16 }}>
-        <InboxOutlined /> {t('portal.receptionDashboardTitle')}
+      <Title level={4} style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <PortalTitleIcon>
+          <InboxOutlined />
+        </PortalTitleIcon>
+        {t('portal.receptionDashboardTitle')}
       </Title>
       <Card>
         <Paragraph type="secondary">

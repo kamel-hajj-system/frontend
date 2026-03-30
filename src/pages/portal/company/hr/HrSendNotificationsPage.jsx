@@ -25,6 +25,7 @@ import {
 } from '../../../../api/notifications';
 import { USER_TYPES } from '../../../../utils/constants';
 import { NotificationSchedulePanel } from '../../../../components/notifications/NotificationSchedulePanel';
+import { PortalTitleIcon } from '../../../../components/portal/PortalTitleIcon';
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
@@ -241,8 +242,11 @@ export function HrSendNotificationsPage() {
 
   return (
     <div>
-      <Title level={4} style={{ marginBottom: 16 }}>
-        <BellOutlined /> {isAr ? 'إرسال إشعارات (الموارد البشرية)' : 'HR: send notifications'}
+      <Title level={4} style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <PortalTitleIcon>
+          <BellOutlined />
+        </PortalTitleIcon>
+        {isAr ? 'إرسال إشعارات (الموارد البشرية)' : 'HR: send notifications'}
       </Title>
 
       <Card

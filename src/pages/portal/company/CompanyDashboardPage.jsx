@@ -3,6 +3,7 @@ import { Card, Typography } from 'antd';
 import { BankOutlined } from '@ant-design/icons';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import { PortalTitleIcon } from '../../../components/portal/PortalTitleIcon';
 
 const { Title, Paragraph } = Typography;
 
@@ -13,8 +14,11 @@ export function CompanyDashboardPage() {
 
   return (
     <div>
-      <Title level={4} style={{ marginBottom: 16 }}>
-        <BankOutlined /> {t('portal.companyDashboardTitle')}
+      <Title level={4} style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <PortalTitleIcon>
+          <BankOutlined />
+        </PortalTitleIcon>
+        {t('portal.companyDashboardTitle')}
       </Title>
       <Card>
         <Paragraph type="secondary">

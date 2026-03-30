@@ -19,11 +19,13 @@ function svgUrl(iso, mirror) {
 const SIZES = {
   default: { w: 56, h: 40, emoji: 26, letter: 16 },
   card: { w: 112, h: 75, emoji: 40, letter: 22 },
+  /** Full-width strip; width comes from container. */
+  banner: { h: 76, emoji: 48, letter: 28 },
 };
 
 /**
  * Flag from `flagCode` (ISO2 / common ISO3). Not from free-form `code`.
- * @param {'default'|'card'} [variant='default'] — `card`: larger, same chrome as reception stat cards (bg, radius, shadow).
+ * @param {'default'|'card'|'banner'} [variant='default'] — `card`: larger fixed box; `banner`: full-width top strip.
  */
 export function NationalityFlagImage({ flagCode, nat, token, variant = 'default' }) {
   const iso = resolveNationalityIso2ForFlag(flagCode);
@@ -40,17 +42,22 @@ export function NationalityFlagImage({ flagCode, nat, token, variant = 'default'
   const emoji = iso ? iso2ToFlagEmoji(iso) : null;
   const letter = nationalityLetterFallback(nat);
 
-  const { w, h, emoji: emojiSize, letter: letterSize } = SIZES[variant] ?? SIZES.default;
+  const sizePreset = variant === 'banner' ? SIZES.banner : (SIZES[variant] ?? SIZES.default);
+  const isBanner = variant === 'banner';
   const isCard = variant === 'card';
+  const w = isBanner ? '100%' : sizePreset.w;
+  const h = sizePreset.h;
+  const emojiSize = sizePreset.emoji;
+  const letterSize = sizePreset.letter;
 
   const boxStyle = {
     width: w,
     height: h,
-    borderRadius: isCard ? token.borderRadiusLG * 1.25 : token.borderRadius,
+    borderRadius: isBanner ? 0 : isCard ? token.borderRadiusLG * 1.25 : token.borderRadius,
     overflow: 'hidden',
-    flexShrink: 0,
-    background: isCard ? token.colorBgContainer : token.colorFillQuaternary,
-    border: `1px solid ${token.colorBorderSecondary}`,
+    flexShrink: isBanner ? undefined : 0,
+    background: isCard || isBanner ? token.colorPrimaryBg : token.colorFillQuaternary,
+    border: isBanner ? 'none' : `1px solid ${token.colorBorderSecondary}`,
     boxShadow: isCard ? token.boxShadowTertiary : undefined,
     display: 'flex',
     alignItems: 'center',
@@ -95,8 +102,8 @@ export function NationalityFlagImage({ flagCode, nat, token, variant = 'default'
         key={src}
         src={src}
         alt=""
-        width={w}
-        height={h}
+        width={typeof w === 'number' ? w : undefined}
+        height={typeof h === 'number' ? h : undefined}
         loading="lazy"
         decoding="async"
         referrerPolicy="no-referrer"

@@ -38,7 +38,7 @@ export const ROUTES = {
   PORTAL_SERVICE_CENTER_NOTIFICATIONS: '/portal/service-center/notifications',
   PORTAL_RECEPTION_DASHBOARD: '/portal/reception/dashboard',
   PORTAL_RECEPTION_SERVICE_CENTERS: '/portal/reception/service-centers',
-  PORTAL_RECEPTION_NATIONALITIES: '/portal/reception/nationalities',
+  PORTAL_RECEPTION_PILGRIM_COMPANIES: '/portal/reception/pilgrim-companies',
   SUPER_ADMIN: '/superadmin',
   SUPER_ADMIN_DASHBOARD: '/superadmin/dashboard',
   SUPER_ADMIN_ACCESS: '/superadmin/access',
@@ -47,6 +47,8 @@ export const ROUTES = {
   SUPER_ADMIN_LOCATIONS: '/superadmin/locations',
   SUPER_ADMIN_SHIFTS: '/superadmin/shifts',
   SUPER_ADMIN_SERVICE_CENTERS: '/superadmin/service-centers',
+  SUPER_ADMIN_PILGRIM_COMPANIES: '/superadmin/pilgrim-companies',
+  SUPER_ADMIN_PILGRIM_NATIONALITIES: '/superadmin/pilgrim-nationalities',
   /** Super Admin: received notifications (inbox). */
   SUPER_ADMIN_NOTIFICATION_INBOX: '/superadmin/notification-inbox',
   /** Super Admin: broadcast / send to users. */
@@ -188,10 +190,10 @@ export const ACCESS_TREE = [
         path: ROUTES.PORTAL_RECEPTION_SERVICE_CENTERS,
       },
       {
-        key: 'reception.nationalities',
-        titleAr: 'الجنسيات',
-        titleEn: 'Nationalities',
-        path: ROUTES.PORTAL_RECEPTION_NATIONALITIES,
+        key: 'reception.pilgrimCompanies',
+        titleAr: 'البعثات',
+        titleEn: 'Pilgrim companies overview',
+        path: ROUTES.PORTAL_RECEPTION_PILGRIM_COMPANIES,
       },
     ],
   },
@@ -235,6 +237,18 @@ export const ACCESS_TREE = [
         titleAr: 'مراكز الخدمة',
         titleEn: 'Service centers',
         path: ROUTES.SUPER_ADMIN_SERVICE_CENTERS,
+      },
+      {
+        key: 'superadmin.pilgrim_companies',
+        titleAr: 'البعثات',
+        titleEn: 'Pilgrim companies',
+        path: ROUTES.SUPER_ADMIN_PILGRIM_COMPANIES,
+      },
+      {
+        key: 'superadmin.pilgrim_nationalities',
+        titleAr: 'مرجع الجنسيات',
+        titleEn: 'Nationality reference',
+        path: ROUTES.SUPER_ADMIN_PILGRIM_NATIONALITIES,
       },
       {
         key: 'superadmin.shifts',

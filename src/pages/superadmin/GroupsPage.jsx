@@ -1,6 +1,17 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { Table, Button, Card, Modal, Form, Input, Select, message, Space, Typography } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SafetyOutlined, TeamOutlined, CheckSquareOutlined, BorderOutlined } from '@ant-design/icons';
+import { Table, Button, Card, Modal, Form, Input, Select, message, Space, Typography, Row, Col } from 'antd';
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  SafetyOutlined,
+  TeamOutlined,
+  CheckSquareOutlined,
+  BorderOutlined,
+  SaveOutlined,
+  IdcardOutlined,
+} from '@ant-design/icons';
+import { StructuredFormModal, FormSectionCard } from '../../components/forms';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getGroups, createGroup, updateGroup, deleteGroup, setGroupPermissions, setGroupUsers, getGroupById } from '../../api/groups';
 import { getLocations } from '../../api/locations';
@@ -226,33 +237,47 @@ export function GroupsPage() {
         />
       </Card>
 
-      <Modal
-        title={editingId ? t('superadmin.editGroup') : t('superadmin.addGroup')}
+      <StructuredFormModal
         open={modalOpen}
-        onCancel={() => setModalOpen(false)}
-        onOk={handleSubmit}
-        confirmLoading={actionLoading}
-        okText={t('common.save')}
+        onClose={() => setModalOpen(false)}
+        title={editingId ? t('superadmin.editGroup') : t('superadmin.addGroup')}
+        onSubmit={handleSubmit}
+        submitLoading={actionLoading}
+        submitText={t('common.save')}
         cancelText={t('common.cancel')}
+        submitIcon={<SaveOutlined />}
+        closeAriaLabel={t('common.close')}
+        width={720}
       >
-        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-          <Form.Item name="name" label={t('superadmin.name')} rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="locationId" label={t('superadmin.groupLocation')}>
-            <Select
-              allowClear
-              placeholder={t('signUp.selectLocation')}
-              showSearch
-              optionFilterProp="label"
-              options={locations.map((l) => ({ value: l.id, label: l.name }))}
-            />
-          </Form.Item>
-          <Form.Item name="description" label={t('superadmin.description')}>
-            <Input.TextArea rows={2} />
-          </Form.Item>
+        <Form form={form} layout="vertical" requiredMark>
+          <FormSectionCard title={t('superadmin.groupFormSectionMain')}>
+            <Row gutter={[16, 0]}>
+              <Col xs={24} md={12}>
+                <Form.Item name="name" label={t('superadmin.name')} rules={[{ required: true }]}>
+                  <Input size="large" allowClear prefix={<IdcardOutlined />} />
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={12}>
+                <Form.Item name="locationId" label={t('superadmin.groupLocation')}>
+                  <Select
+                    size="large"
+                    allowClear
+                    placeholder={t('signUp.selectLocation')}
+                    showSearch
+                    optionFilterProp="label"
+                    options={locations.map((l) => ({ value: l.id, label: l.name }))}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </FormSectionCard>
+          <FormSectionCard title={t('superadmin.groupFormSectionDescription')}>
+            <Form.Item name="description" label={t('superadmin.description')}>
+              <Input.TextArea rows={4} showCount maxLength={2000} />
+            </Form.Item>
+          </FormSectionCard>
         </Form>
-      </Modal>
+      </StructuredFormModal>
 
       <Modal
         title={t('superadmin.assignPermissionsToGroup') + (permsModalGroup ? ` — ${permsModalGroup.name}` : '')}

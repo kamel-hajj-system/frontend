@@ -7,6 +7,8 @@ import {
   TeamOutlined,
   EnvironmentOutlined,
   ShopOutlined,
+  ApartmentOutlined,
+  FlagOutlined,
   ClockCircleOutlined,
   LogoutOutlined,
   GlobalOutlined,
@@ -99,6 +101,18 @@ export function SuperAdminLayout() {
       icon: <ShopOutlined />,
       label: isAr ? 'مراكز الخدمة' : 'Service Centers',
       onClick: () => { navigate(ROUTES.SUPER_ADMIN_SERVICE_CENTERS); setDrawerOpen(false); },
+    },
+    {
+      key: ROUTES.SUPER_ADMIN_PILGRIM_COMPANIES,
+      icon: <ApartmentOutlined />,
+      label: isAr ? 'البعثات' : 'Pilgrim Companies',
+      onClick: () => { navigate(ROUTES.SUPER_ADMIN_PILGRIM_COMPANIES); setDrawerOpen(false); },
+    },
+    {
+      key: ROUTES.SUPER_ADMIN_PILGRIM_NATIONALITIES,
+      icon: <FlagOutlined />,
+      label: isAr ? 'مرجع الجنسيات' : 'Nationality Reference',
+      onClick: () => { navigate(ROUTES.SUPER_ADMIN_PILGRIM_NATIONALITIES); setDrawerOpen(false); },
     },
     {
       key: ROUTES.SUPER_ADMIN_SHIFTS,

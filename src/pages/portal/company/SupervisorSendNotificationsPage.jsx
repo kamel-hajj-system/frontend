@@ -12,6 +12,7 @@ import {
 } from '../../../api/notifications';
 import { USER_TYPES } from '../../../utils/constants';
 import { NotificationSchedulePanel } from '../../../components/notifications/NotificationSchedulePanel';
+import { PortalTitleIcon } from '../../../components/portal/PortalTitleIcon';
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
@@ -232,21 +233,9 @@ export function SupervisorSendNotificationsPage() {
           fontWeight: 600,
         }}
       >
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 40,
-            height: 40,
-            borderRadius: token.borderRadiusLG,
-            background: token.colorPrimaryBg,
-            color: token.colorPrimary,
-          }}
-          aria-hidden
-        >
-          <BellOutlined style={{ fontSize: 18 }} />
-        </span>
+        <PortalTitleIcon>
+          <BellOutlined />
+        </PortalTitleIcon>
         {t('portal.supervisorSendNotificationsTitle')}
       </Title>
 

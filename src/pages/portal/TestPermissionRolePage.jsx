@@ -4,6 +4,7 @@ import { SafetyOutlined, TeamOutlined, CheckCircleOutlined, StopOutlined } from 
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { USER_TYPES } from '../../utils/constants';
+import { PortalTitleIcon } from '../../components/portal/PortalTitleIcon';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -41,8 +42,11 @@ export function TestPermissionRolePage() {
 
   return (
     <div>
-      <Title level={4} style={{ marginBottom: 24 }}>
-        <SafetyOutlined /> {t('portal.test.title')}
+      <Title level={4} style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <PortalTitleIcon>
+          <SafetyOutlined />
+        </PortalTitleIcon>
+        {t('portal.test.title')}
       </Title>
 
       <Card title={t('portal.test.yourInfo')} style={{ marginBottom: 16 }}>

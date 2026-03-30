@@ -20,6 +20,7 @@ import { useLanguage } from '../../../../contexts/LanguageContext';
 import { getHrPendingRegistrations, approveHrPendingUser } from '../../../../api/users';
 import { USER_TYPES, ROLES } from '../../../../utils/constants';
 import { ResponsiveTable } from '../../../../components/common/ResponsiveTable';
+import { PortalTitleIcon } from '../../../../components/portal/PortalTitleIcon';
 
 const { Paragraph, Text } = Typography;
 
@@ -187,9 +188,11 @@ export function HrPendingApprovalsPage() {
   return (
     <Card
       title={
-        <Space>
-          <UserOutlined />
-          {t('hrPending.title')}
+        <Space align="center" size={10}>
+          <PortalTitleIcon>
+            <UserOutlined />
+          </PortalTitleIcon>
+          <span>{t('hrPending.title')}</span>
         </Space>
       }
       extra={

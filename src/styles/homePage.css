@@ -637,6 +637,12 @@
   border-bottom-color: rgba(255, 255, 255, 0.35);
 }
 
+.kamel-home-footer__contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
 /* Footer wordmark: KamelLogoLightPublic (light) / KamelLogoDarkPublic (dark) — no white tray in dark mode */
 .kamel-home-footer__brand-pill {
   display: inline-block;

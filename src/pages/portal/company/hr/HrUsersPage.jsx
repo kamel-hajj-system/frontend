@@ -6,6 +6,7 @@ import { useLanguage } from '../../../../contexts/LanguageContext';
 import { getHrUsers, updateHrUser, hrResetPassword } from '../../../../api/users';
 import { USER_TYPES, ROLES } from '../../../../utils/constants';
 import { ResponsiveTable } from '../../../../components/common/ResponsiveTable';
+import { PortalTitleIcon } from '../../../../components/portal/PortalTitleIcon';
 
 const { Option } = Select;
 
@@ -251,8 +252,11 @@ export function HrUsersPage() {
   return (
     <Card
       title={
-        <Space>
-          <UserOutlined /> {t('portal.hrUsersTitle')}
+        <Space align="center" size={10}>
+          <PortalTitleIcon>
+            <UserOutlined />
+          </PortalTitleIcon>
+          <span>{t('portal.hrUsersTitle')}</span>
         </Space>
       }
       extra={

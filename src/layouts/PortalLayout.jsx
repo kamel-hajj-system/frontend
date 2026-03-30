@@ -213,7 +213,7 @@ export function PortalLayout() {
       : []),
     ...(hasAccess?.('reception.dashboard') ||
     hasAccess?.('reception.serviceCenters') ||
-    hasAccess?.('reception.nationalities')
+    hasAccess?.('reception.pilgrimCompanies')
       ? [
           {
             key: 'reception-submenu',
@@ -244,13 +244,13 @@ export function PortalLayout() {
                     },
                   ]
                 : []),
-              ...(hasAccess?.('reception.nationalities')
+              ...(hasAccess?.('reception.pilgrimCompanies')
                 ? [
                     {
-                      key: ROUTES.PORTAL_RECEPTION_NATIONALITIES,
-                      label: t('portal.receptionNatMenu'),
+                      key: ROUTES.PORTAL_RECEPTION_PILGRIM_COMPANIES,
+                      label: t('portal.receptionPilgrimCompaniesTitle'),
                       onClick: () => {
-                        navigate(ROUTES.PORTAL_RECEPTION_NATIONALITIES);
+                        navigate(ROUTES.PORTAL_RECEPTION_PILGRIM_COMPANIES);
                         setDrawerOpen(false);
                       },
                     },
@@ -281,7 +281,7 @@ export function PortalLayout() {
       if (
         p === ROUTES.PORTAL_RECEPTION_DASHBOARD ||
         p === ROUTES.PORTAL_RECEPTION_SERVICE_CENTERS ||
-        p === ROUTES.PORTAL_RECEPTION_NATIONALITIES
+        p === ROUTES.PORTAL_RECEPTION_PILGRIM_COMPANIES
       ) {
         next.add('reception-submenu');
       }

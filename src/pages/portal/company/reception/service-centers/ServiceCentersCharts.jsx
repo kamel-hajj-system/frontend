@@ -82,7 +82,7 @@ export function ServiceCentersBarChart({
         },
         {
           label: arrivedLabel,
-          data: centers.map((c) => c.totalArrived ?? 0),
+          data: centers.map((c) => c.totalIntegrated ?? 0),
           backgroundColor: hexToRgba(arrivedColor, 0.82),
           borderColor: arrivedColor,
           borderWidth: 1,

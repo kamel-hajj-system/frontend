@@ -6,6 +6,7 @@ import { useAuth } from '../../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../../contexts/LanguageContext';
 import { USER_TYPES } from '../../../../../utils/constants';
 import { attendanceCheckIn, attendanceCheckOut, getAttendanceStatus } from '../../../../../api/attendance';
+import { PortalTitleIcon } from '../../../../../components/portal/PortalTitleIcon';
 
 const { Title } = Typography;
 
@@ -209,8 +210,10 @@ export function AttendanceAndDeparturePage() {
 
   return (
     <div>
-      <Title level={4} style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <FingerprintIcon sx={{ fontSize: 22, color: 'inherit' }} />
+      <Title level={4} style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <PortalTitleIcon>
+          <FingerprintIcon sx={{ fontSize: 22, color: 'inherit' }} />
+        </PortalTitleIcon>
         {t('portal.attendanceDepartureTitle')}
       </Title>
       <Card

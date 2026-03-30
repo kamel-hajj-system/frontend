@@ -15,6 +15,7 @@ import { useLanguage } from '../../../../contexts/LanguageContext';
 import { getSupervisorPendingRegistrations, approveSupervisorPendingUser } from '../../../../api/users';
 import { USER_TYPES, SUPERVISOR_ASSIGNABLE_ROLES } from '../../../../utils/constants';
 import { ResponsiveTable } from '../../../../components/common/ResponsiveTable';
+import { PortalTitleIcon } from '../../../../components/portal/PortalTitleIcon';
 
 const { Paragraph, Text } = Typography;
 
@@ -150,9 +151,11 @@ export function SupervisorPendingApprovalsPage() {
   return (
     <Card
       title={
-        <Space>
-          <TeamOutlined />
-          {t('supervisorPending.title')}
+        <Space align="center" size={10}>
+          <PortalTitleIcon>
+            <TeamOutlined />
+          </PortalTitleIcon>
+          <span>{t('supervisorPending.title')}</span>
         </Space>
       }
       extra={<Tag color="processing">{t('supervisorPending.badge')}</Tag>}
