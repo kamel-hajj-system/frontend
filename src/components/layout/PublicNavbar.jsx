@@ -68,10 +68,14 @@ export function PublicNavbar() {
   const landingPath = isAuthenticated && user ? getAuthenticatedLandingRoute(user) : ROUTES.HOME;
 
   const isHome = location.pathname === ROUTES.HOME;
-  /** Marketing home (logged-out): use the same top navbar on phones as on desktop — no hamburger drawer. */
-  const isPublicMarketingHome = !isAuthenticated && isHome;
-  const compactNav = !isDesktop && isPublicMarketingHome;
-  const showDesktopNavLayout = isDesktop || isPublicMarketingHome;
+  const isPublicAuthPage =
+    location.pathname === ROUTES.LOGIN ||
+    location.pathname === ROUTES.SIGN_UP_NORMAL ||
+    location.pathname === ROUTES.SIGN_UP_SERVICE_CENTER;
+  /** Logged-out marketing/auth pages: use the same top navbar on phones as on desktop — no hamburger drawer. */
+  const isPublicCompactNavPage = !isAuthenticated && (isHome || isPublicAuthPage);
+  const compactNav = !isDesktop && isPublicCompactNavPage;
+  const showDesktopNavLayout = isDesktop || isPublicCompactNavPage;
   /** Larger wordmark on marketing home; dark mode uses public dark artwork. */
   const navLogoVariant = isHome ? (theme === 'dark' ? 'darkPublic' : 'lightPublic') : 'auto';
   const navLogoHeightDesktop = isHome ? 52 : 34;
@@ -545,7 +549,7 @@ export function PublicNavbar() {
         </div>
       </div>
 
-      {!isDesktop && !isPublicMarketingHome && (
+      {!isDesktop && !isPublicCompactNavPage && (
         <Drawer
           title={
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>

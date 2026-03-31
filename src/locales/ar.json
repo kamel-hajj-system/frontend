@@ -114,7 +114,7 @@
     "serviceCenterId": "معرف مركز الخدمة",
     "selectServiceCenter": "مركز الخدمة التابع له",
     "serviceCenterRequired": "يرجى اختيار مركز الخدمة",
-    "serviceCenterSelectHint": "اختر المركز الذي تنتمي إليه (المعرف يحدده المشرف).",
+    "serviceCenterSelectHint": "اختر المركز الذي تنتمي إليه",
     "serviceCenterIntro": "أنشئ حسابك للوصول إلى بوابة مركز الخدمة.",
     "employeeIntro": "أنشئ حسابك للانضمام إلى مؤسستك كموظف.",
     "noCentersYet": "التسجيل غير متاح حالياً: لم يُنشأ أي مركز خدمة. تواصل مع المشرف.",

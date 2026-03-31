@@ -1,6 +1,33 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Card, DatePicker, Input, Select, Space, Tag, Typography, Button } from 'antd';
-import { CalendarOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import {
+  Alert,
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Empty,
+  Input,
+  Row,
+  Select,
+  Space,
+  Tag,
+  Typography,
+  theme as antTheme,
+} from 'antd';
+import {
+  ApartmentOutlined,
+  AppstoreOutlined,
+  CalendarOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  EnvironmentOutlined,
+  FilterOutlined,
+  LogoutOutlined,
+  ReloadOutlined,
+  SearchOutlined,
+  TableOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../contexts/LanguageContext';
@@ -8,6 +35,7 @@ import { getSupervisorAttendance } from '../../../../api/attendance';
 import { getMyEmployees } from '../../../../api/users';
 import { ResponsiveTable } from '../../../../components/common/ResponsiveTable';
 import { PortalTitleIcon } from '../../../../components/portal/PortalTitleIcon';
+import { SummaryStatCard } from '../../../../components/dashboard/SummaryStatCard';
 import { USER_TYPES } from '../../../../utils/constants';
 
 const { Title, Text } = Typography;
@@ -45,7 +73,23 @@ function fmtIso(iso, lang) {
   }).format(d);
 }
 
+function fmtTime(iso, lang) {
+  if (!iso) return '—';
+  return new Intl.DateTimeFormat(lang === 'ar' ? 'ar-SA' : 'en-US', {
+    timeZone: 'Asia/Riyadh',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(new Date(iso));
+}
+
+function attendanceCardName(row, isAr) {
+  const u = row.user || {};
+  return (isAr ? u.fullNameAr : u.fullName) || u.fullName || u.fullNameAr || u.email || '—';
+}
+
 export function SupervisorAttendancePage() {
+  const { token } = antTheme.useToken();
   const { user } = useAuth();
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar';
@@ -62,6 +106,8 @@ export function SupervisorAttendancePage() {
   const [locationId, setLocationId] = useState(undefined);
   const [shiftId, setShiftId] = useState(undefined);
   const [q, setQ] = useState('');
+  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [attendanceView, setAttendanceView] = useState('table');
 
   const canView = user?.userType === USER_TYPES.COMPANY && user?.role === 'Supervisor';
 
@@ -143,7 +189,7 @@ export function SupervisorAttendancePage() {
     const checkedOut = rows.filter((r) => !!r.checkOutAt).length;
     const insideIn = rows.filter((r) => r.checkInInsideZone === true).length;
     const insideOut = rows.filter((r) => r.checkOutInsideZone === true).length;
-    return { checkedIn, checkedOut, insideIn, insideOut };
+    return { checkedIn, checkedOut, insideIn, insideOut, total: rows.length, serverTotal: total };
   }, [rows]);
 
   const columns = useMemo(
@@ -227,14 +273,50 @@ export function SupervisorAttendancePage() {
     [isAr, lang]
   );
 
+  const groupedByLocation = useMemo(() => {
+    const map = new Map();
+    for (const r of rows) {
+      const loc = r.user?.shiftLocation;
+      const key = loc?.id || '__none__';
+      if (!map.has(key)) {
+        map.set(key, {
+          id: key,
+          title: key === '__none__' ? (isAr ? 'بدون موقع' : 'No location') : (isAr ? loc?.locationAr || loc?.name : loc?.name) || '—',
+          items: [],
+        });
+      }
+      map.get(key).items.push(r);
+    }
+    return Array.from(map.values()).sort((a, b) => (a.title || '').localeCompare(b.title || '', isAr ? 'ar' : 'en'));
+  }, [rows, isAr]);
+
   return (
     <div>
-      <Title level={4} style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <PortalTitleIcon>
-          <CalendarOutlined />
-        </PortalTitleIcon>
-        {t('portal.supervisorAttendanceTitle')}
-      </Title>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+          flexWrap: 'wrap',
+          marginBottom: 20,
+        }}
+      >
+        <Title level={3} style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <PortalTitleIcon>
+            <CalendarOutlined />
+          </PortalTitleIcon>
+          {t('portal.supervisorAttendanceTitle')}
+        </Title>
+        <Button
+          type="default"
+          icon={<FilterOutlined />}
+          onClick={() => setFiltersOpen((v) => !v)}
+          aria-expanded={filtersOpen}
+        >
+          {isAr ? 'الفلاتر' : 'Filters'}
+        </Button>
+      </div>
 
       <Alert
         type="info"
@@ -243,67 +325,217 @@ export function SupervisorAttendancePage() {
         message={t('portal.supervisorAttendanceHint')}
       />
 
-      <Card
-        style={{ marginBottom: 16 }}
-        bodyStyle={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}
+      {filtersOpen ? (
+        <Card size="small" style={{ marginBottom: 20 }} bodyStyle={{ padding: '12px 16px' }}>
+          <Space direction="vertical" style={{ width: '100%' }} size="middle">
+            <Space wrap style={{ width: '100%', rowGap: 12 }}>
+              <RangePicker
+                value={range}
+                onChange={(v) => setRange(v || [dayjs(), dayjs()])}
+                allowClear={false}
+              />
+              <Select
+                allowClear
+                style={{ width: 240, maxWidth: '100%' }}
+                placeholder={isAr ? 'كل المواقع' : 'All locations'}
+                value={locationId}
+                onChange={setLocationId}
+                options={locations.map((l) => ({ value: l.id, label: isAr ? l.locationAr || l.name : l.name }))}
+              />
+              <Select
+                allowClear
+                style={{ width: 240, maxWidth: '100%' }}
+                placeholder={isAr ? 'كل الورديات' : 'All shifts'}
+                value={shiftId}
+                onChange={setShiftId}
+                options={shifts.map((s) => ({ value: s.id, label: isAr ? s.shiftAr || s.name : s.name }))}
+              />
+              <Input
+                style={{ width: 280, maxWidth: '100%' }}
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                onPressEnter={fetch}
+                allowClear
+                prefix={<SearchOutlined />}
+                placeholder={isAr ? 'بحث بالاسم/الإيميل/الجوال' : 'Search name/email/phone'}
+              />
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={() => {
+                  loadTeamFilterOptions();
+                  fetch();
+                }}
+                loading={loading || metaLoading}
+              >
+                {isAr ? 'تحديث' : 'Refresh'}
+              </Button>
+            </Space>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              {isAr ? 'إجمالي السجلات المطابقة للفلتر' : 'Matching records'}: <strong>{summary.serverTotal}</strong>
+              {summary.serverTotal > rows.length
+                ? isAr
+                  ? ` · عرض ${rows.length} ضمن الحد`
+                  : ` · Showing ${rows.length} (limit)`
+                : null}
+            </Text>
+          </Space>
+        </Card>
+      ) : null}
+
+      <Row gutter={[16, 16]} justify="center" style={{ marginBottom: 28 }}>
+        <Col xs={24} sm={12} md={8} lg={6} xl={4}>
+          <SummaryStatCard
+            icon={<CalendarOutlined />}
+            accent={token.colorPrimary}
+            label={isAr ? 'الإجمالي' : 'Total'}
+            value={summary.total}
+            minHeight={148}
+          />
+        </Col>
+        <Col xs={24} sm={12} md={8} lg={6} xl={4}>
+          <SummaryStatCard
+            icon={<CheckCircleOutlined />}
+            accent={token.colorSuccess}
+            label={isAr ? 'حضور' : 'Checked-in'}
+            value={summary.checkedIn}
+            minHeight={148}
+          />
+        </Col>
+        <Col xs={24} sm={12} md={8} lg={6} xl={4}>
+          <SummaryStatCard
+            icon={<LogoutOutlined />}
+            accent={token.colorInfo}
+            label={isAr ? 'انصراف' : 'Checked-out'}
+            value={summary.checkedOut}
+            minHeight={148}
+          />
+        </Col>
+        <Col xs={24} sm={12} md={8} lg={6} xl={4}>
+          <SummaryStatCard
+            icon={<EnvironmentOutlined />}
+            accent={token.colorSuccess}
+            label={isAr ? 'داخل النطاق (حضور)' : 'Inside zone (in)'}
+            value={summary.insideIn}
+            minHeight={148}
+          />
+        </Col>
+        <Col xs={24} sm={12} md={8} lg={6} xl={4}>
+          <SummaryStatCard
+            icon={<EnvironmentOutlined />}
+            accent={token.colorWarning}
+            label={isAr ? 'داخل النطاق (انصراف)' : 'Inside zone (out)'}
+            value={summary.insideOut}
+            minHeight={148}
+          />
+        </Col>
+      </Row>
+
+      <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+        <Space.Compact>
+          <Button
+            type={attendanceView === 'table' ? 'primary' : 'default'}
+            icon={<TableOutlined />}
+            onClick={() => setAttendanceView('table')}
+          >
+            {isAr ? 'عرض الجدول' : 'Table view'}
+          </Button>
+          <Button
+            type={attendanceView === 'board' ? 'primary' : 'default'}
+            icon={<AppstoreOutlined />}
+            onClick={() => setAttendanceView('board')}
+          >
+            {isAr ? 'عرض البطاقات' : 'Board view'}
+          </Button>
+        </Space.Compact>
+      </div>
+
+      <div
+        style={{
+          width: '100%',
+          padding: '18px 20px 22px',
+          border: `1px solid ${token.colorBorderSecondary}`,
+          borderRadius: 16,
+          background: token.colorBgElevated,
+          boxShadow: `0 1px 0 color-mix(in srgb, ${token.colorBorder} 45%, transparent), 0 12px 36px color-mix(in srgb, ${token.colorPrimary} 7%, transparent)`,
+        }}
       >
-        <RangePicker
-          value={range}
-          onChange={(v) => setRange(v || [dayjs(), dayjs()])}
-          allowClear={false}
-        />
-        <Select
-          allowClear
-          style={{ width: 240 }}
-          placeholder={isAr ? 'كل المواقع' : 'All locations'}
-          value={locationId}
-          onChange={setLocationId}
-          options={locations.map((l) => ({ value: l.id, label: isAr ? l.locationAr || l.name : l.name }))}
-        />
-        <Select
-          allowClear
-          style={{ width: 240 }}
-          placeholder={isAr ? 'كل الورديات' : 'All shifts'}
-          value={shiftId}
-          onChange={setShiftId}
-          options={shifts.map((s) => ({ value: s.id, label: isAr ? s.shiftAr || s.name : s.name }))}
-        />
-        <Input
-          style={{ width: 280, maxWidth: '100%' }}
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          onPressEnter={fetch}
-          allowClear
-          prefix={<SearchOutlined />}
-          placeholder={isAr ? 'بحث بالاسم/الإيميل/الجوال' : 'Search name/email/phone'}
-        />
-        <Button
-          icon={<ReloadOutlined />}
-          onClick={() => {
-            loadTeamFilterOptions();
-            fetch();
-          }}
-          loading={loading || metaLoading}
-        >
-          {isAr ? 'تحديث' : 'Refresh'}
-        </Button>
-
-        <Space wrap>
-          <Tag color="blue">
-            {isAr ? 'السجلات' : 'Records'}: {total}
-          </Tag>
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            {isAr ? 'حضور' : 'Checked-in'}: <strong>{summary.checkedIn}</strong> | {isAr ? 'انصراف' : 'Checked-out'}:{' '}
-            <strong>{summary.checkedOut}</strong> | {isAr ? 'داخل (حضور)' : 'Inside (in)'}:{' '}
-            <strong>{summary.insideIn}</strong> | {isAr ? 'داخل (انصراف)' : 'Inside (out)'}:{' '}
-            <strong>{summary.insideOut}</strong>
-          </Text>
-        </Space>
-      </Card>
-
-      <Card>
-        <ResponsiveTable rowKey="id" loading={loading} columns={columns} dataSource={rows} pagination={false} />
-      </Card>
+        {loading ? (
+          <Card loading style={{ border: 'none', background: 'transparent' }} bodyStyle={{ padding: 24 }} />
+        ) : rows.length === 0 ? (
+          <Empty description={isAr ? 'لا توجد سجلات' : 'No attendance records'} />
+        ) : attendanceView === 'table' ? (
+          <ResponsiveTable rowKey="id" columns={columns} dataSource={rows} pagination={false} />
+        ) : (
+          <Row gutter={[20, 20]}>
+            {groupedByLocation.map((group) => (
+              <Col key={group.id} xs={24}>
+                <div
+                  style={{
+                    border: `1px solid ${token.colorBorderSecondary}`,
+                    borderRadius: 14,
+                    padding: 14,
+                    background: token.colorBgContainer,
+                    boxShadow: token.boxShadowTertiary,
+                    height: '100%',
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: '10px 14px',
+                      borderRadius: 10,
+                      marginBottom: 12,
+                      background: `color-mix(in srgb, ${token.colorPrimary} 8%, ${token.colorFillAlter})`,
+                      border: `1px solid color-mix(in srgb, ${token.colorPrimary} 15%, ${token.colorBorderSecondary})`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                    }}
+                  >
+                    <ApartmentOutlined style={{ fontSize: 18, color: token.colorPrimary }} />
+                    <Text strong style={{ fontSize: 15 }}>{group.title}</Text>
+                    <Text type="secondary" style={{ marginInlineStart: 'auto', fontSize: 13 }}>{group.items.length}</Text>
+                  </div>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+                      gap: 12,
+                    }}
+                  >
+                    {group.items.map((r) => (
+                      <div
+                        key={r.id}
+                        style={{
+                          border: `1px solid ${token.colorBorderSecondary}`,
+                          borderRadius: 12,
+                          padding: 12,
+                          background: token.colorBgContainer,
+                          height: '100%',
+                        }}
+                      >
+                        <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                          <Space size={8} align="center">
+                            <UserOutlined style={{ color: token.colorPrimary }} />
+                            <Text strong style={{ fontSize: 13 }}>{attendanceCardName(r, isAr)}</Text>
+                          </Space>
+                          <Space size={8} align="center">
+                            <ClockCircleOutlined style={{ color: token.colorSuccess }} />
+                            <Text style={{ fontVariantNumeric: 'tabular-nums' }}>{fmtTime(r.checkInAt, lang)}</Text>
+                          </Space>
+                          <Space size={8} align="center">
+                            <ClockCircleOutlined style={{ color: r.checkOutAt ? token.colorError : token.colorTextQuaternary }} />
+                            <Text style={{ fontVariantNumeric: 'tabular-nums' }}>{fmtTime(r.checkOutAt, lang)}</Text>
+                          </Space>
+                        </Space>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Col>
+            ))}
+          </Row>
+        )}
+      </div>
     </div>
   );
 }

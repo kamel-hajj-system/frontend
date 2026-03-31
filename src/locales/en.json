@@ -114,7 +114,7 @@
     "serviceCenterId": "Service Center ID",
     "selectServiceCenter": "Your service center",
     "serviceCenterRequired": "Please select your service center",
-    "serviceCenterSelectHint": "Choose the center you belong to (ID is assigned by the system administrator).",
+    "serviceCenterSelectHint": "Choose the center you belong to",
     "serviceCenterIntro": "Create your account to access the service center portal.",
     "employeeIntro": "Create your account to join your organization as an employee.",
     "noCentersYet": "Registration is not available yet: no service centers have been created. Please contact the administrator.",
