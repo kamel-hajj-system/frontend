@@ -12,6 +12,9 @@ export function PortalRedirect() {
     return <Navigate to={ROUTES.PORTAL_SERVICE_CENTER_DASHBOARD} replace />;
   }
 
-  // default: company
-  return <Navigate to={ROUTES.PORTAL_COMPANY_DASHBOARD} replace />;
+  if (user.userType === USER_TYPES.COMPANY) {
+    return <Navigate to={ROUTES.PORTAL_COMPANY_DASHBOARD} replace />;
+  }
+
+  return <Navigate to={ROUTES.HOME} replace />;
 }

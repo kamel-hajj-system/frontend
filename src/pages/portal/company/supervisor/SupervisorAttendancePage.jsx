@@ -36,7 +36,7 @@ import { getMyEmployees } from '../../../../api/users';
 import { ResponsiveTable } from '../../../../components/common/ResponsiveTable';
 import { PortalTitleIcon } from '../../../../components/portal/PortalTitleIcon';
 import { SummaryStatCard } from '../../../../components/dashboard/SummaryStatCard';
-import { USER_TYPES } from '../../../../utils/constants';
+import { USER_TYPES, PORTAL_TEAM_ACCESS } from '../../../../utils/constants';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -90,7 +90,7 @@ function attendanceCardName(row, isAr) {
 
 export function SupervisorAttendancePage() {
   const { token } = antTheme.useToken();
-  const { user } = useAuth();
+  const { user, hasAccess } = useAuth();
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar';
 
@@ -109,7 +109,9 @@ export function SupervisorAttendancePage() {
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [attendanceView, setAttendanceView] = useState('table');
 
-  const canView = user?.userType === USER_TYPES.COMPANY && user?.role === 'Supervisor';
+  const canView =
+    user?.userType === USER_TYPES.COMPANY &&
+    (user?.role === 'Supervisor' || hasAccess(PORTAL_TEAM_ACCESS.TEAM_ATTENDANCE));
 
   const loadTeamFilterOptions = useCallback(async () => {
     setMetaLoading(true);

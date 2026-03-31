@@ -12,11 +12,14 @@ import {
   MenuOutlined,
   UserOutlined,
   TeamOutlined,
+  TableOutlined,
+  BellOutlined,
+  SendOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { ROUTES, USER_TYPES } from '../utils/constants';
+import { ROUTES, USER_TYPES, PORTAL_TEAM_ACCESS } from '../utils/constants';
 import { NotificationBellDropdown } from '../components/common/NotificationBellDropdown';
 import { KamelLogo } from '../components/common/KamelLogo';
 import { PWAInstallButton } from '../components/pwa/PWAInstallButton';
@@ -124,6 +127,14 @@ export function PortalLayout() {
                 },
               },
               {
+                key: ROUTES.PORTAL_COMPANY_NOTIFICATIONS,
+                label: t('nav.notifications'),
+                onClick: () => {
+                  navigate(ROUTES.PORTAL_COMPANY_NOTIFICATIONS);
+                  setDrawerOpen(false);
+                },
+              },
+              {
                 key: ROUTES.PORTAL_COMPANY_SEND_NOTIFICATIONS,
                 label: t('portal.supervisorSendNotificationsTitle'),
                 onClick: () => {
@@ -133,6 +144,62 @@ export function PortalLayout() {
               },
             ],
           },
+        ]
+      : []),
+    ...(user?.userType === USER_TYPES.COMPANY && user?.role !== 'Supervisor'
+      ? [
+          ...(hasAccess(PORTAL_TEAM_ACCESS.EMPLOYEES)
+            ? [
+                {
+                  key: ROUTES.PORTAL_COMPANY_EMPLOYEES,
+                  icon: <TeamOutlined />,
+                  label: t('portal.employeesTitle'),
+                  onClick: () => {
+                    navigate(ROUTES.PORTAL_COMPANY_EMPLOYEES);
+                    setDrawerOpen(false);
+                  },
+                },
+              ]
+            : []),
+          ...(hasAccess(PORTAL_TEAM_ACCESS.TEAM_ATTENDANCE)
+            ? [
+                {
+                  key: ROUTES.PORTAL_COMPANY_SUPERVISOR_ATTENDANCE,
+                  icon: <TableOutlined />,
+                  label: t('portal.supervisorAttendanceTitle'),
+                  onClick: () => {
+                    navigate(ROUTES.PORTAL_COMPANY_SUPERVISOR_ATTENDANCE);
+                    setDrawerOpen(false);
+                  },
+                },
+              ]
+            : []),
+          ...(hasAccess(PORTAL_TEAM_ACCESS.COMPANY_NOTIFICATIONS_INBOX)
+            ? [
+                {
+                  key: ROUTES.PORTAL_COMPANY_NOTIFICATIONS,
+                  icon: <BellOutlined />,
+                  label: t('nav.notifications'),
+                  onClick: () => {
+                    navigate(ROUTES.PORTAL_COMPANY_NOTIFICATIONS);
+                    setDrawerOpen(false);
+                  },
+                },
+              ]
+            : []),
+          ...(hasAccess(PORTAL_TEAM_ACCESS.SEND_NOTIFICATIONS)
+            ? [
+                {
+                  key: ROUTES.PORTAL_COMPANY_SEND_NOTIFICATIONS,
+                  icon: <SendOutlined />,
+                  label: t('portal.supervisorSendNotificationsTitle'),
+                  onClick: () => {
+                    navigate(ROUTES.PORTAL_COMPANY_SEND_NOTIFICATIONS);
+                    setDrawerOpen(false);
+                  },
+                },
+              ]
+            : []),
         ]
       : []),
     ...(user?.userType === USER_TYPES.COMPANY
@@ -271,6 +338,7 @@ export function PortalLayout() {
         p === ROUTES.PORTAL_COMPANY_EMPLOYEES ||
         p === ROUTES.PORTAL_COMPANY_SUPERVISOR_ATTENDANCE ||
         p === ROUTES.PORTAL_COMPANY_SUPERVISOR_PENDING ||
+        p === ROUTES.PORTAL_COMPANY_NOTIFICATIONS ||
         p === ROUTES.PORTAL_COMPANY_SEND_NOTIFICATIONS
       ) {
         next.add('supervisor-my-team');

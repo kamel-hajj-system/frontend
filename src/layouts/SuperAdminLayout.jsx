@@ -5,6 +5,7 @@ import {
   CrownOutlined,
   SafetyOutlined,
   TeamOutlined,
+  EyeOutlined,
   EnvironmentOutlined,
   ShopOutlined,
   ApartmentOutlined,
@@ -83,6 +84,12 @@ export function SuperAdminLayout() {
       icon: <TeamOutlined />,
       label: isAr ? 'تعيين مشرف للمستخدمين' : 'Assign Supervisor',
       onClick: () => { navigate(ROUTES.SUPER_ADMIN_ASSIGN_SUPERVISOR); setDrawerOpen(false); },
+    },
+    {
+      key: ROUTES.SUPER_ADMIN_DELEGATED_VISIBILITY,
+      icon: <EyeOutlined />,
+      label: isAr ? 'رؤية الموظفين (يدوي)' : 'Delegated visibility',
+      onClick: () => { navigate(ROUTES.SUPER_ADMIN_DELEGATED_VISIBILITY); setDrawerOpen(false); },
     },
     {
       key: ROUTES.SUPER_ADMIN_SUPERVISORS,

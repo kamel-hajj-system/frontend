@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Table, Button, Card, Modal, Form, Input, Select, Switch,
   Space, Tag, message, Popconfirm, Typography,
@@ -24,6 +24,16 @@ export function SuperAdminDashboardPage() {
   const [locations, setLocations] = useState([]);
   const [shifts, setShifts] = useState([]);
   const [serviceCenters, setServiceCenters] = useState([]);
+  const [supervisors, setSupervisors] = useState([]);
+
+  const supervisorOptions = useMemo(
+    () =>
+      supervisors.map((s) => ({
+        value: s.id,
+        label: `${s.fullName || ''}${s.fullNameAr ? ` — ${s.fullNameAr}` : ''} (${s.email})`,
+      })),
+    [supervisors]
+  );
 
   const [createVisible, setCreateVisible] = useState(false);
   const [createForm] = Form.useForm();
@@ -37,6 +47,9 @@ export function SuperAdminDashboardPage() {
     getLocations().then(setLocations).catch(() => setLocations([]));
     getShifts().then(setShifts).catch(() => setShifts([]));
     getServiceCenters().then(setServiceCenters).catch(() => setServiceCenters([]));
+    getUsers({ limit: 500, userType: USER_TYPES.COMPANY, role: 'Supervisor' })
+      .then((res) => setSupervisors(res.data || []))
+      .catch(() => setSupervisors([]));
   }, []);
 
   const fetchUsers = useCallback(() => {
@@ -64,7 +77,7 @@ export function SuperAdminDashboardPage() {
         jobTitle: values.jobTitle?.trim() || undefined,
         shiftId: values.shiftId || undefined,
         locationId: values.locationId || undefined,
-        supervisorId: values.supervisorId?.trim() || undefined,
+        supervisorId: values.supervisorId || undefined,
         serviceCenterId: values.serviceCenterId || undefined,
         isActive: values.isActive !== false,
         isHr: values.isHr === true,
@@ -103,7 +116,7 @@ export function SuperAdminDashboardPage() {
       jobTitle: record.jobTitle || '',
       locationId: record.locationId || undefined,
       shiftId: record.shiftId || undefined,
-      supervisorId: record.supervisorId || '',
+      supervisorId: record.supervisorId || undefined,
       serviceCenterId: record.serviceCenterId || undefined,
       isActive: record.isActive ?? true,
       isHr: record.isHr ?? false,
@@ -124,7 +137,7 @@ export function SuperAdminDashboardPage() {
         jobTitle: values.jobTitle?.trim() || null,
         locationId: values.locationId || null,
         shiftId: values.shiftId || null,
-        supervisorId: values.supervisorId?.trim() || null,
+        supervisorId: values.supervisorId || null,
         serviceCenterId: values.serviceCenterId || null,
         isActive: values.isActive,
         isHr: values.isHr,
@@ -257,26 +270,32 @@ export function SuperAdminDashboardPage() {
       <Form.Item name="jobTitle" label={isAr ? 'المسمى الوظيفي' : 'Job Title'}>
         <Input />
       </Form.Item>
-      <Form.Item name="locationId" label={isAr ? 'الموقع' : 'Location'}>
+      <Form.Item name="locationId" label={isAr ? 'الموقع (اختياري)' : 'Location (optional)'}>
         <Select
           allowClear
-          placeholder={isAr ? 'اختر الموقع' : 'Select location'}
+          placeholder={isAr ? 'اختر الموقع أو اتركه فارغاً' : 'Select location or leave empty'}
           showSearch
           optionFilterProp="label"
           options={locations.map((l) => ({ value: l.id, label: isAr ? (l.locationAr || l.name) : l.name }))}
         />
       </Form.Item>
-      <Form.Item name="shiftId" label={isAr ? 'الوردية' : 'Shift'}>
+      <Form.Item name="shiftId" label={isAr ? 'الوردية (اختياري)' : 'Shift (optional)'}>
         <Select
           allowClear
-          placeholder={isAr ? 'اختر الوردية' : 'Select shift'}
+          placeholder={isAr ? 'اختر الوردية أو اتركه فارغاً' : 'Select shift or leave empty'}
           showSearch
           optionFilterProp="label"
           options={shifts.map((s) => ({ value: s.id, label: isAr ? (s.shiftAr || s.name) : s.name }))}
         />
       </Form.Item>
-      <Form.Item name="supervisorId" label={isAr ? 'معرف المشرف' : 'Supervisor ID'}>
-        <Input placeholder="UUID" />
+      <Form.Item name="supervisorId" label={isAr ? 'المشرف' : 'Supervisor'}>
+        <Select
+          allowClear
+          showSearch
+          optionFilterProp="label"
+          placeholder={isAr ? 'اختر المشرف (اختياري)' : 'Select supervisor (optional)'}
+          options={supervisorOptions}
+        />
       </Form.Item>
       <Form.Item name="serviceCenterId" label={t('signUp.serviceCenterId')}>
         <Select

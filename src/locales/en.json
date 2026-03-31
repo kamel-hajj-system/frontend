@@ -298,24 +298,7 @@
     "supervisorAttendanceTitle": "Team attendance",
     "supervisorAttendanceHint": "View only. Shows check-in and check-out for employees who report to you.",
     "attendanceDepartureTitle": "Attendance & Departure",
-    "hrDashboardIntro": "This dashboard is dedicated to HR to manage users and access.",
-    "test": {
-      "title": "Test Permission and Role",
-      "yourInfo": "Your info",
-      "yourPermissions": "Your permissions",
-      "noPermissions": "No permissions assigned.",
-      "testRoles": "Test roles",
-      "testRolesHint": "Click a button to see if your role allows the action.",
-      "adminOnly": "Admin only",
-      "supervisorOnly": "Supervisor or Admin",
-      "employeeOrAbove": "Employee or above",
-      "adminSuccess": "You have Admin role — action allowed.",
-      "adminDenied": "This action is for Admin role only.",
-      "supervisorSuccess": "You have Supervisor/Admin role — action allowed.",
-      "supervisorDenied": "This action is for Supervisor or Admin only.",
-      "employeeSuccess": "You have a valid role — action allowed.",
-      "employeeDenied": "Role check failed."
-    }
+    "hrDashboardIntro": "This dashboard is dedicated to HR to manage users and access."
   },
   "superadmin": {
     "title": "Super Admin",
@@ -490,6 +473,15 @@
     "natArrivingAtCenter": "Arriving",
     "natWaitingAtCenter": "Waiting",
     "natNoCentersForNationality": "No service center is linked to this nationality yet.",
-    "natFooterSums": "Totals across centers: allocated {{alloc}}, arriving {{arr}}, waiting {{wait}}."
+    "natFooterSums": "Totals across centers: allocated {{alloc}}, arriving {{arr}}, waiting {{wait}}.",
+    "delegatedVisibilityTitle": "Delegated employee visibility",
+    "delegatedVisibilityIntro": "Pick a company user (viewer), then pick which company accounts they may see. Saving stores assignments only; their portal will use this in the next step.",
+    "delegatedVisibilityViewer": "Viewer",
+    "delegatedVisibilityVisibleUsers": "Users they can see",
+    "delegatedVisibilitySave": "Save assignments",
+    "delegatedVisibilitySaved": "Assignments saved",
+    "delegatedVisibilitySelectViewer": "Select a viewer first",
+    "delegatedVisibilitySummary": "Current assignments",
+    "delegatedVisibilityReload": "Refresh"
   }
 }

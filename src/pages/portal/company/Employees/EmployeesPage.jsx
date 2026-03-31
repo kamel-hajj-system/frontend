@@ -5,7 +5,7 @@ import { useAuth } from '../../../../contexts/AuthContext';
 import { useLanguage } from '../../../../contexts/LanguageContext';
 import { getMyEmployees, updateMyEmployeeRole } from '../../../../api/users';
 import { ResponsiveTable } from '../../../../components/common/ResponsiveTable';
-import { USER_TYPES, SUPERVISOR_ASSIGNABLE_ROLES } from '../../../../utils/constants';
+import { USER_TYPES, SUPERVISOR_ASSIGNABLE_ROLES, PORTAL_TEAM_ACCESS } from '../../../../utils/constants';
 import { PortalTitleIcon } from '../../../../components/portal/PortalTitleIcon';
 
 const { Title, Text } = Typography;
@@ -23,7 +23,7 @@ function renderPersonName(isAr, u) {
 }
 
 export function EmployeesPage() {
-  const { user } = useAuth();
+  const { user, hasAccess } = useAuth();
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar';
 
@@ -34,7 +34,10 @@ export function EmployeesPage() {
   const [savingId, setSavingId] = useState(null);
   const [form] = Form.useForm();
 
-  const canView = user?.userType === USER_TYPES.COMPANY && user?.role === 'Supervisor';
+  const canView =
+    user?.userType === USER_TYPES.COMPANY &&
+    (user?.role === 'Supervisor' || hasAccess(PORTAL_TEAM_ACCESS.EMPLOYEES));
+  const canEditRoles = user?.role === 'Supervisor';
 
   const fetchEmployees = useCallback(async () => {
     setLoading(true);
@@ -87,8 +90,8 @@ export function EmployeesPage() {
     return <Alert type="error" message={t('forbidden.message')} showIcon />;
   }
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const base = [
       {
         title: isAr ? 'الموظف' : 'Employee',
         key: 'name',
@@ -101,7 +104,7 @@ export function EmployeesPage() {
         key: 'role',
         width: 220,
         render: (v, record) =>
-          editingId === record.id ? (
+          canEditRoles && editingId === record.id ? (
             <Form.Item name="role" style={{ margin: 0 }} rules={[{ required: true }]}>
               <Select style={{ minWidth: 160 }}>
                 {SUPERVISOR_ASSIGNABLE_ROLES.map((role) => (
@@ -122,6 +125,10 @@ export function EmployeesPage() {
         width: 100,
         render: (v) => (v ? <Tag color="success">{isAr ? 'نعم' : 'Yes'}</Tag> : <Tag color="error">{isAr ? 'لا' : 'No'}</Tag>),
       },
+    ];
+    if (!canEditRoles) return base;
+    return [
+      ...base,
       {
         title: isAr ? 'إجراءات' : 'Actions',
         key: 'actions',
@@ -149,9 +156,8 @@ export function EmployeesPage() {
             </Button>
           ),
       },
-    ],
-    [isAr, editingId, savingId, t]
-  );
+    ];
+  }, [isAr, editingId, savingId, t, canEditRoles]);
 
   return (
     <div>
@@ -181,7 +187,13 @@ export function EmployeesPage() {
         <Space>
           <Badge count={rows.length} showZero color="#1677ff" />
           <Text type="secondary" style={{ fontSize: 12 }}>
-            {isAr ? 'موظف تحتك' : 'employee(s) under you'}
+            {canEditRoles
+              ? isAr
+                ? 'موظف تحتك'
+                : 'employee(s) under you'
+              : isAr
+                ? 'الموظفون المعيّنون لك'
+                : 'employee(s) assigned to you'}
           </Text>
         </Space>
       </Card>

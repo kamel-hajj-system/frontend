@@ -4,6 +4,14 @@ export const USER_TYPES = {
   SUPER_ADMIN: 'SuperAdmin',
 };
 
+/** Stored in `access_grants`; assign via Super Admin → Access Control. Supervisors bypass via role. */
+export const PORTAL_TEAM_ACCESS = {
+  EMPLOYEES: 'portal.company.employees',
+  TEAM_ATTENDANCE: 'portal.supervisor.attendance',
+  COMPANY_NOTIFICATIONS_INBOX: 'portal.company.notifications',
+  SEND_NOTIFICATIONS: 'portal.company.send_notifications',
+};
+
 export const ROLES = ['Supervisor', 'EmpRead', 'EmpManage'];
 
 /** Roles a company supervisor may assign to direct reports (not Supervisor). */
@@ -43,6 +51,8 @@ export const ROUTES = {
   SUPER_ADMIN_DASHBOARD: '/superadmin/dashboard',
   SUPER_ADMIN_ACCESS: '/superadmin/access',
   SUPER_ADMIN_ASSIGN_SUPERVISOR: '/superadmin/assign-supervisor',
+  /** Super Admin: manual viewer → visible company users (delegated visibility). */
+  SUPER_ADMIN_DELEGATED_VISIBILITY: '/superadmin/delegated-visibility',
   SUPER_ADMIN_SUPERVISORS: '/superadmin/supervisors',
   SUPER_ADMIN_LOCATIONS: '/superadmin/locations',
   SUPER_ADMIN_SHIFTS: '/superadmin/shifts',
@@ -219,6 +229,12 @@ export const ACCESS_TREE = [
         titleAr: 'تعيين مشرف',
         titleEn: 'Assign supervisor',
         path: ROUTES.SUPER_ADMIN_ASSIGN_SUPERVISOR,
+      },
+      {
+        key: 'superadmin.delegated_visibility',
+        titleAr: 'صلاحية رؤية الموظفين (يدوي)',
+        titleEn: 'Delegated employee visibility',
+        path: ROUTES.SUPER_ADMIN_DELEGATED_VISIBILITY,
       },
       {
         key: 'superadmin.supervisors',

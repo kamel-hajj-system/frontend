@@ -298,24 +298,7 @@
     "supervisorAttendanceTitle": "حضور الفريق",
     "supervisorAttendanceHint": "عرض فقط. يظهر تسجيل الحضور والانصراف للموظفين التابعين لك مباشرة.",
     "attendanceDepartureTitle": "الحضور والانصراف",
-    "hrDashboardIntro": "هذه لوحة خاصة لفريق الموارد البشرية لإدارة المستخدمين والوصول.",
-    "test": {
-      "title": "اختبار الصلاحية والدور",
-      "yourInfo": "معلوماتك",
-      "yourPermissions": "صلاحياتك",
-      "noPermissions": "لا توجد صلاحيات معينة.",
-      "testRoles": "اختبار الأدوار",
-      "testRolesHint": "اضغط الزر لمعرفة إن كان دورك يسمح بالإجراء.",
-      "adminOnly": "مدير فقط",
-      "supervisorOnly": "مشرف أو مدير",
-      "employeeOrAbove": "موظف أو أعلى",
-      "adminSuccess": "لديك دور مدير — الإجراء مسموح.",
-      "adminDenied": "هذا الإجراء لمدير فقط.",
-      "supervisorSuccess": "لديك دور مشرف/مدير — الإجراء مسموح.",
-      "supervisorDenied": "هذا الإجراء للمشرف أو المدير فقط.",
-      "employeeSuccess": "لديك دور صالح — الإجراء مسموح.",
-      "employeeDenied": "فشل التحقق من الدور."
-    }
+    "hrDashboardIntro": "هذه لوحة خاصة لفريق الموارد البشرية لإدارة المستخدمين والوصول."
   },
   "superadmin": {
     "title": "الإدارة العليا",
@@ -490,6 +473,15 @@
     "natArrivingAtCenter": "الواصلون",
     "natWaitingAtCenter": "في الانتظار",
     "natNoCentersForNationality": "لا يوجد مركز خدمة مرتبط بهذه الجنسية بعد.",
-    "natFooterSums": "مجموع المراكز: مخصص {{alloc}}، واصلون {{arr}}، في الانتظار {{wait}}."
+    "natFooterSums": "مجموع المراكز: مخصص {{alloc}}، واصلون {{arr}}، في الانتظار {{wait}}.",
+    "delegatedVisibilityTitle": "صلاحية رؤية الموظفين (يدوي)",
+    "delegatedVisibilityIntro": "اختر مستخدم شركة (المشاهد)، ثم اختر الحسابات التي يجوز له رؤيتها. الحفظ يخزن الربط فقط؛ البوابة ستستخدم ذلك لاحقاً.",
+    "delegatedVisibilityViewer": "المشاهد",
+    "delegatedVisibilityVisibleUsers": "المستخدمون المرئيون له",
+    "delegatedVisibilitySave": "حفظ التعيين",
+    "delegatedVisibilitySaved": "تم الحفظ",
+    "delegatedVisibilitySelectViewer": "اختر المشاهد أولاً",
+    "delegatedVisibilitySummary": "التعيينات الحالية",
+    "delegatedVisibilityReload": "تحديث"
   }
 }

@@ -34,6 +34,7 @@ import { PilgrimCompaniesDashboardPage } from '../pages/portal/company/reception
 import { SuperAdminDashboardPage } from '../pages/superadmin/SuperAdminDashboardPage';
 import { AccessControlPage } from '../pages/superadmin/AccessControlPage';
 import { AssignSupervisorPage } from '../pages/superadmin/AssignSupervisorPage';
+import { DelegatedVisibilityPage } from '../pages/superadmin/DelegatedVisibilityPage';
 import { SupervisorsManagementPage } from '../pages/superadmin/SupervisorsManagementPage';
 import { LocationsPage } from '../pages/superadmin/LocationsPage';
 import { ServiceCentersManagementPage } from '../pages/superadmin/ServiceCentersManagementPage';
@@ -234,6 +235,7 @@ const router = createBrowserRouter([
       { path: 'dashboard', element: <SuperAdminDashboardPage /> },
       { path: 'access', element: <AccessControlPage /> },
       { path: 'assign-supervisor', element: <AssignSupervisorPage /> },
+      { path: 'delegated-visibility', element: <DelegatedVisibilityPage /> },
       { path: 'supervisors', element: <SupervisorsManagementPage /> },
       { path: 'locations', element: <LocationsPage /> },
       { path: 'service-centers', element: <ServiceCentersManagementPage /> },

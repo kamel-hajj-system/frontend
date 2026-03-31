@@ -10,7 +10,7 @@ import {
   getMyScheduledNotifications,
   cancelScheduledNotification,
 } from '../../../api/notifications';
-import { USER_TYPES } from '../../../utils/constants';
+import { USER_TYPES, PORTAL_TEAM_ACCESS } from '../../../utils/constants';
 import { NotificationSchedulePanel } from '../../../components/notifications/NotificationSchedulePanel';
 import { PortalTitleIcon } from '../../../components/portal/PortalTitleIcon';
 
@@ -30,7 +30,7 @@ function renderPersonName(isAr, u) {
 
 export function SupervisorSendNotificationsPage() {
   const { token } = theme.useToken();
-  const { user } = useAuth();
+  const { user, hasAccess } = useAuth();
   const { t, lang } = useLanguage();
   const isAr = lang === 'ar';
 
@@ -44,7 +44,9 @@ export function SupervisorSendNotificationsPage() {
   const [scheduledRows, setScheduledRows] = useState([]);
   const [loadingSched, setLoadingSched] = useState(false);
 
-  const canView = user?.userType === USER_TYPES.COMPANY && user?.role === 'Supervisor';
+  const canView =
+    user?.userType === USER_TYPES.COMPANY &&
+    (user?.role === 'Supervisor' || hasAccess(PORTAL_TEAM_ACCESS.SEND_NOTIFICATIONS));
 
   const loadScheduled = useCallback(async () => {
     setLoadingSched(true);
